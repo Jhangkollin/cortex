@@ -542,7 +542,7 @@ body {
   margin-bottom: 4px;
 }
 .sp .top .left h1 {
-  font: 700 32px/1.15 var(--font-serif);
+  font: 700 32px/1.15 var(--font-sans);
   letter-spacing: -0.02em;
 
   color: var(--mly-ink-900);
@@ -698,7 +698,7 @@ body {
   50%       { opacity: 1; transform: translate(-50%, -50%) scale(1); }
 }
 .sp .hero .h-main .v {
-  font: 700 38px/1.05 var(--font-serif);
+  font: 500 38px/1.05 var(--font-sans);
   letter-spacing: -0.02em;
   color: var(--mly-ink-900);
   margin-top: 8px;
@@ -707,12 +707,12 @@ body {
   gap: 6px;
 }
 .sp .hero .h-main .v sup {
-  font: 500 20px/1 var(--font-serif);
+  font: 500 20px/1 var(--font-sans);
   color: var(--mly-ink-400);
   letter-spacing: -0.01em;
 }
 .sp .hero .h-main .sub {
-  margin-top: 10px;
+  margin-top: 12px;
   display: flex;
   align-items: center;
   gap: 12px;
@@ -725,7 +725,7 @@ body {
   gap: 4px;
   color: var(--mly-teal-700);
   font-weight: 700;
-  background: #EAF5F2;
+  background: var(--mly-teal-050);
   padding: 4px 8px;
   border-radius: 999px;
   font-size: 12.5px;
@@ -751,7 +751,7 @@ body {
   text-transform: uppercase;
 }
 .sp .hero .mini .v {
-  font: 700 38px/1.05 var(--font-serif);
+  font: 500 38px/1.05 var(--font-sans);
 
   color: var(--mly-ink-900);
   letter-spacing: -0.02em;
@@ -762,7 +762,7 @@ body {
   align-items: center;
   justify-content: space-between;
   gap: 8px;
-  margin-top: 14px;
+  margin-top: 16px;
   font: 500 12px var(--font-mono);
   color: var(--mly-ink-500);
 }
@@ -772,18 +772,15 @@ body {
   gap: 4px;
   color: var(--mly-teal-700);
   font-weight: 700;
-  background: #EAF5F2;
+  background: var(--mly-teal-050);
   padding: 4px 8px;
   border-radius: 999px;
   font-size: 12px;
 }
 /* v2: KPI mini cards — sparkline replaces the progress bar */
-.sp .hero .mini {
-  padding-bottom: 14px;
-}
 .sp .hero .mini .row {
   margin-top: 8px;
-  margin-bottom: 6px;
+  margin-bottom: 8px;
 }
 .sp .hero .mini .mini-spk {
   display: block;
@@ -808,18 +805,18 @@ body {
   display: flex;
   justify-content: space-between;
   align-items: flex-end;
-  margin-bottom: 18px;
+  margin-bottom: 20px;
 }
 .sp .funnel .fh h3 {
   margin: 0;
-  font: 700 22px/1.2 var(--font-serif);
+  font: 700 22px/1.2 var(--font-sans);
   color: var(--mly-ink-900);
 }
 .sp .funnel .fh h3 small {
   display: block;
   font: 400 12px var(--font-sans);
   color: var(--mly-ink-500);
-  margin-top: 3px;
+  margin-top: 4px;
 }
 .sp .funnel .flow {
   display: grid;
@@ -850,7 +847,7 @@ body {
   display: block;
 }
 .sp .funnel .fnl-v {
-  font: 700 38px/1 var(--font-serif);
+  font: 500 38px/1 var(--font-sans);
   letter-spacing: -0.018em;
   color: var(--mly-ink-900);
   text-align: center;
@@ -886,7 +883,7 @@ body {
 
 .sp .grid .card h3 {
   margin: 0 0 2px;
-  font: 700 22px/1.2 var(--font-serif);
+  font: 700 22px/1.2 var(--font-sans);
   color: var(--mly-ink-900);
 }
 .sp .grid .card .ch {
@@ -903,7 +900,7 @@ body {
 .sp .grid .card .sub {
   font: 400 12px var(--font-sans);
   color: var(--mly-ink-500);
-  margin-top: 3px;
+  margin-top: 4px;
 }
 .sp .media .row {
   display: grid;
@@ -939,7 +936,7 @@ body {
 .sp .media .row .nm .badge {
   font: 600 9px var(--font-sans);
   letter-spacing: 0.06em;
-  background: #EAF5F2;
+  background: var(--mly-teal-050);
   color: var(--mly-teal-700);
   padding: 2px 5px;
   border-radius: 3px;
@@ -974,7 +971,7 @@ body {
   display: flex;
   justify-content: space-between;
   align-items: baseline;
-  margin-bottom: 6px;
+  margin-bottom: 8px;
 }
 .sp .comp .h2h .nm {
   font: 500 12.5px var(--font-sans);
@@ -1004,14 +1001,14 @@ body {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin-top: 14px;
+  margin-top: 16px;
   padding-top: 12px;
   border-top: 1px dashed var(--mly-ink-150);
   font: 500 12px var(--font-mono);
   color: var(--mly-ink-500);
 }
 .sp .comp .legend b {
-  color: #9A4D1B;
+  color: var(--mly-danger);
   font-weight: 700;
 }
 
@@ -1620,7 +1617,7 @@ body {
   color: #8A4E11;
 }
 .sp .alert.is-opp .alert-cat {
-  background: #EAF5F2;
+  background: var(--mly-teal-050);
   color: var(--mly-teal-700);
 }
 .sp .alert.is-sig .alert-cat {
@@ -1719,7 +1716,7 @@ body {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-top: 14px;
+  margin-top: 16px;
   padding-top: 12px;
   border-top: 1px dashed var(--mly-ink-200);
   font: 400 12.5px var(--font-sans);

@@ -265,7 +265,7 @@ function ReadyHero({ report, onDismiss }: ReadyHeroProps): ReactElement {
             href={`/brand/reports/${reportId}`}
             style={{
               background: "#fff",
-              color: "#144948",
+              color: "var(--mly-teal-800)",
               border: "none",
               padding: "11px 18px",
               borderRadius: 8,
@@ -279,7 +279,7 @@ function ReadyHero({ report, onDismiss }: ReadyHeroProps): ReactElement {
               boxShadow: "0 6px 16px -3px rgba(20,73,72,0.20)",
             }}
           >
-            <span className="material-icons-outlined" style={{ fontSize: 15, color: "#144948" }}>
+            <span className="material-icons-outlined" style={{ fontSize: 15, color: "var(--mly-teal-800)" }}>
               arrow_forward
             </span>
             查看 Brand IQ 報告
