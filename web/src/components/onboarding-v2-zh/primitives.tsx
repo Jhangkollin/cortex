@@ -1,9 +1,14 @@
 "use client";
 
 /**
- * Shared UI primitives for /onboarding/v2/zh-TW — zh-Hant sibling of
- * ../onboarding-v2/primitives.tsx. The two are byte-for-byte identical
- * except for translated TopBar copy and a flipped LangSwitch target.
+ * Shared UI primitives for /onboarding/v2 — kept private to this module so the
+ * one-off variants (amber CTAs, onDark surfaces, the `lg` button size used by
+ * the launch hero) don't bleed into the app-wide ui/button.tsx. If a piece of
+ * this becomes broadly useful, promote it out — until then, this is a sealed
+ * prototype.
+ *
+ * The zh-Hant sibling at ../onboarding-v2-zh/primitives.tsx is byte-for-byte
+ * identical except for translated TopBar copy and a flipped LangSwitch target.
  * Keep them in sync when adding shared primitives.
  */
 
@@ -12,7 +17,7 @@ import Link from "next/link";
 import type { Route } from "next";
 import { type CSSProperties, type ReactNode, useEffect, useState } from "react";
 
-import { INTENT_COLOR, INTENT_LABEL_ZH, type RailIndex } from "./data";
+import { INTENT_COLOR, type RailIndex } from "./data";
 
 export function Icon({
   name,
@@ -94,12 +99,15 @@ export function OnbButton({
   const v = VARIANT_PALETTE[variant];
   const s = SIZE_DIMS[size];
   const [hover, setHover] = useState(false);
+  const [focused, setFocused] = useState(false);
   return (
     <button
       type={type}
       onClick={onClick}
       onMouseEnter={() => setHover(true)}
       onMouseLeave={() => setHover(false)}
+      onFocus={() => setFocused(true)}
+      onBlur={() => setFocused(false)}
       disabled={disabled}
       style={{
         display: "inline-flex",
@@ -116,9 +124,11 @@ export function OnbButton({
         borderRadius: 4,
         cursor: disabled ? "not-allowed" : "pointer",
         opacity: disabled ? 0.45 : 1,
-        transition: "all 120ms cubic-bezier(0.4,0,0.2,1)",
+        transition: "background 120ms, border-color 120ms, opacity 120ms, box-shadow 120ms cubic-bezier(0.4,0,0.2,1)",
         whiteSpace: "nowrap",
         fontFamily: "inherit",
+        outline: focused ? "2px solid var(--mly-teal-600)" : "none",
+        outlineOffset: 2,
         boxShadow: glow,
         ...style,
       }}
@@ -137,7 +147,7 @@ export function Card({ children, style }: { children: ReactNode; style?: CSSProp
         background: "#fff",
         border: "1px solid var(--mly-ink-150)",
         borderRadius: 10,
-        boxShadow: "0 1px 2px rgba(0,0,0,0.04), 0 1px 1px rgba(0,0,0,0.03)",
+        boxShadow: "0 1px 3px rgba(31,27,20,0.06), 0 1px 1px rgba(31,27,20,0.04)",
         ...style,
       }}
     >
@@ -158,30 +168,41 @@ const BADGE_PALETTE: Record<BadgeColor, { bg: string; fg: string }> = {
   onDark: { bg: "rgba(255,255,255,0.12)", fg: "rgba(255,255,255,0.92)" },
 };
 
+type BadgeSize = "s" | "m" | "l";
+
+const BADGE_SIZE: Record<BadgeSize, { fontSize: number; padding: string; borderRadius: number; gap: number }> = {
+  s: { fontSize: 11, padding: "2px 6px",  borderRadius: 3, gap: 3 },
+  m: { fontSize: 12, padding: "4px 8px",  borderRadius: 4, gap: 4 },
+  l: { fontSize: 13, padding: "6px 12px", borderRadius: 6, gap: 4 },
+};
+
 export function Badge({
   children,
   color = "ink",
+  size = "m",
   style,
 }: {
   children: ReactNode;
   color?: BadgeColor;
+  size?: BadgeSize;
   style?: CSSProperties;
 }) {
   const p = BADGE_PALETTE[color];
+  const s = BADGE_SIZE[size];
   return (
     <span
       style={{
         display: "inline-flex",
         alignItems: "center",
-        gap: 4,
+        gap: s.gap,
         background: p.bg,
         color: p.fg,
-        fontSize: 10,
+        fontSize: s.fontSize,
         fontWeight: 700,
         letterSpacing: "0.06em",
         textTransform: "uppercase",
-        padding: "3px 8px",
-        borderRadius: 3,
+        padding: s.padding,
+        borderRadius: s.borderRadius,
         ...style,
       }}
     >
@@ -200,14 +221,14 @@ export function IntentPill({ intent }: { intent: keyof typeof INTENT_COLOR }) {
         gap: 4,
         background: c.bg,
         color: c.fg,
-        fontSize: 11,
+        fontSize: 12,
         fontWeight: 600,
-        padding: "2px 9px",
+        padding: "0px 8px",
         borderRadius: 999,
       }}
     >
       <span style={{ width: 5, height: 5, borderRadius: "50%", background: c.fg }} />
-      {INTENT_LABEL_ZH[intent]}
+      {intent}
     </span>
   );
 }
@@ -236,10 +257,10 @@ export function CountUp({
     raf = requestAnimationFrame(tick);
     return () => cancelAnimationFrame(raf);
   }, [to, duration]);
-  const formatted = v.toLocaleString("en-US", {
+  const formatted = new Intl.NumberFormat(undefined, {
     minimumFractionDigits: decimals,
     maximumFractionDigits: decimals,
-  });
+  }).format(v);
   return (
     <span>
       {formatted}
@@ -252,10 +273,12 @@ export function Toggle({
   on,
   onChange,
   size = "md",
+  ariaLabel,
 }: {
   on: boolean;
   onChange: () => void;
   size?: "md" | "sm";
+  ariaLabel?: string;
 }) {
   const w = size === "sm" ? 38 : 46;
   const h = size === "sm" ? 22 : 26;
@@ -265,6 +288,7 @@ export function Toggle({
       type="button"
       onClick={onChange}
       aria-pressed={on}
+      aria-label={ariaLabel}
       style={{
         width: w,
         height: h,
@@ -273,7 +297,7 @@ export function Toggle({
         cursor: "pointer",
         background: on ? "var(--mly-teal-600)" : "var(--mly-ink-200)",
         position: "relative",
-        transition: "all 200ms",
+        transition: "background 200ms, box-shadow 200ms",
         boxShadow: on ? "inset 0 0 0 1px var(--mly-teal-700)" : "inset 0 0 0 1px var(--mly-ink-300)",
         flexShrink: 0,
       }}
@@ -287,7 +311,7 @@ export function Toggle({
           height: dot,
           borderRadius: "50%",
           background: "#fff",
-          transition: "all 200ms",
+          transition: "left 200ms, background 200ms",
           boxShadow: "0 1px 3px rgba(0,0,0,0.2)",
           display: "grid",
           placeItems: "center",
@@ -308,64 +332,67 @@ export function StepRail({
   steps: readonly string[];
 }) {
   return (
-    <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+    <div style={{ display: "flex", alignItems: "center", gap: 4 }}>
       {steps.map((s, i) => {
         const done = i < step;
         const active = i === step;
-        // Light Edition (handoff §3.3): completed = gold + white check,
-        // active = solid brand-teal disc + white number, future = outlined
-        // paper-border with paper-ink-3 number. Connector = paper-border.
-        const discBg = done
-          ? "var(--gold)"
-          : active
-            ? "var(--brand-teal)"
-            : "transparent";
-        const discBorder = done
-          ? "var(--gold)"
-          : active
-            ? "var(--brand-teal)"
-            : "var(--paper-border)";
-        const discFg = done || active ? "#fff" : "var(--paper-ink-3)";
-        const labelColor = active ? "var(--paper-ink)" : "var(--paper-ink-3)";
         return (
-          <span key={s} style={{ display: "inline-flex", alignItems: "center", gap: 10 }}>
-            <span
-              style={{
-                display: "flex",
-                alignItems: "center",
-                gap: 8,
-              }}
-            >
+          <span key={s} style={{ display: "inline-flex", alignItems: "center", gap: 4 }}>
+            <span style={{ display: "flex", alignItems: "center", gap: 4 }}>
+              {/* Disc — active is larger (24px), inactive/done is smaller (20px) */}
               <span
                 style={{
-                  width: 24,
-                  height: 24,
+                  width: active ? 24 : 20,
+                  height: active ? 24 : 20,
                   borderRadius: "50%",
-                  background: discBg,
-                  border: `1.5px solid ${discBorder}`,
-                  color: discFg,
+                  background: done
+                    ? "var(--gold)"
+                    : active
+                      ? "var(--mly-teal-700)"
+                      : "transparent",
+                  border: `1.5px solid ${
+                    done
+                      ? "var(--gold)"
+                      : active
+                        ? "var(--mly-teal-700)"
+                        : "var(--paper-border)"
+                  }`,
+                  color: done || active ? "#fff" : "var(--paper-ink-3)",
                   display: "grid",
                   placeItems: "center",
-                  fontSize: 11,
+                  fontSize: 12,
                   fontWeight: 700,
                   fontFamily: "var(--font-numeric)",
+                  flexShrink: 0,
+                  transition: "width 200ms, height 200ms, background 200ms, border-color 200ms",
                 }}
               >
-                {done ? <Icon name="check" size={14} /> : i + 1}
+                {done ? <Icon name="check" size={12} /> : i + 1}
               </span>
-              <span
-                style={{
-                  fontSize: 12,
-                  fontWeight: active ? 700 : 500,
-                  color: labelColor,
-                  letterSpacing: "0.01em",
-                }}
-              >
-                {s}
-              </span>
+              {/* Label only shown for the active step */}
+              {active ? (
+                <span
+                  style={{
+                    fontSize: 12,
+                    fontWeight: 700,
+                    color: "var(--paper-ink)",
+                    letterSpacing: "0.01em",
+                    whiteSpace: "nowrap",
+                  }}
+                >
+                  {s}
+                </span>
+              ) : null}
             </span>
             {i < steps.length - 1 ? (
-              <span style={{ width: 22, height: 1, background: "var(--paper-border)" }} />
+              <span
+                style={{
+                  width: active || (i === step - 1) ? 18 : 12,
+                  height: 1,
+                  background: "var(--paper-border)",
+                  flexShrink: 0,
+                }}
+              />
             ) : null}
           </span>
         );
@@ -391,11 +418,11 @@ function LangSwitch({
       style={{
         display: "inline-flex",
         alignItems: "center",
-        gap: 6,
-        fontSize: 11,
+        gap: 4,
+        fontSize: 12,
         fontFamily: "var(--font-mono)",
         color: "var(--paper-ink-3)",
-        padding: "5px 10px",
+        padding: "4px 8px",
         border: "1px solid var(--paper-border)",
         borderRadius: 999,
         background: "#fff",
@@ -422,9 +449,9 @@ export function TopBar({
   steps,
   onSkip,
   onExit,
-  lang = "zh",
+  lang = "en",
   showDemoBadge = false,
-  langSwitchHref = "/onboarding/v2" as Route,
+  langSwitchHref = "/onboarding/v2/zh-TW" as Route,
 }: {
   railStep: RailIndex;
   steps: readonly string[];
@@ -438,10 +465,11 @@ export function TopBar({
     <div
       style={{
         // Light Edition (handoff §3.3): white surface + paper-border seam.
-        // Deep-teal banner replaced with a paper-ink-on-white contract.
+        // The deep-teal gradient was replaced with a paper-ink-on-white
+        // contract so the rail reads as a documentary header, not a banner.
         background: "#fff",
         color: "var(--paper-ink)",
-        padding: "14px 0",
+        padding: "12px 0",
         borderBottom: "1px solid var(--paper-border)",
         position: "sticky",
         top: 0,
@@ -464,7 +492,7 @@ export function TopBar({
           style={{
             display: "flex",
             alignItems: "center",
-            gap: 10,
+            gap: 8,
             background: "transparent",
             border: "none",
             color: "var(--paper-ink)",
@@ -488,50 +516,32 @@ export function TopBar({
             data-mly-mark="lockup"
             style={{ flexShrink: 0, height: "auto" }}
           />
-          <span style={{ textAlign: "left" }}>
-            <span
-              style={{
-                fontSize: 11,
-                color: "var(--paper-ink-3)",
-                display: "block",
-              }}
-            >
-              Brand setup · 第一次進入
-            </span>
-          </span>
           {showDemoBadge ? <Badge color="ink" style={{ marginLeft: 10 }}>Demo</Badge> : null}
         </button>
         <StepRail step={railStep} steps={steps} />
-        <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
-          <span
-            style={{
-              fontSize: 11,
-              color: "var(--paper-ink-3)",
-              fontFamily: "var(--font-mono)",
-            }}
-          >
-            約 5 分鐘
-          </span>
+        <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
           <LangSwitch current={lang} targetHref={langSwitchHref} />
           <button
             type="button"
             onClick={onSkip}
             style={{
-              background: "#fff",
-              color: "var(--paper-ink-2)",
-              border: "1px solid var(--paper-border)",
-              padding: "7px 14px",
-              borderRadius: 6,
+              background: "transparent",
+              color: "var(--paper-ink-3)",
+              border: "none",
+              padding: "4px 0",
               cursor: "pointer",
               fontSize: 12,
-              fontWeight: 600,
+              fontWeight: 500,
               fontFamily: "inherit",
               display: "inline-flex",
               alignItems: "center",
-              gap: 6,
+              gap: 4,
+              textDecoration: "underline",
+              textDecorationColor: "var(--paper-border)",
+              textUnderlineOffset: 3,
             }}
           >
-            稍後再設定
+            Set up later
           </button>
         </div>
       </div>
@@ -552,21 +562,54 @@ export function StepHead({
 }) {
   return (
     <div style={{ marginBottom: 24 }}>
-      <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 8 }}>
-        <Badge color="amber">{eyebrow}</Badge>
+      <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 12 }}>
+        {/* Teal pill eyebrow — matches step-welcome's brand pill */}
+        <div
+          style={{
+            display: "inline-flex",
+            alignItems: "center",
+            gap: 8,
+            padding: "4px 12px",
+            borderRadius: 999,
+            background: "rgba(28,114,107,0.07)",
+            border: "1px solid rgba(28,114,107,0.15)",
+          }}
+        >
+          <span
+            style={{
+              width: 5,
+              height: 5,
+              borderRadius: "50%",
+              background: "var(--mly-teal-700)",
+              display: "inline-block",
+            }}
+          />
+          <span
+            style={{
+              fontSize: 12,
+              fontWeight: 700,
+              letterSpacing: "0.09em",
+              textTransform: "uppercase",
+              color: "var(--mly-teal-700)",
+            }}
+          >
+            {eyebrow}
+          </span>
+        </div>
         {accent ? (
-          <span style={{ fontFamily: "var(--font-mono)", fontSize: 11, color: "var(--mly-ink-500)" }}>
+          <span style={{ fontFamily: "var(--font-mono)", fontSize: 12, color: "var(--mly-ink-400)" }}>
             {accent}
           </span>
         ) : null}
       </div>
       <h2
         style={{
-          fontSize: 28,
+          fontFamily: "'Fraunces', Georgia, serif",
+          fontSize: "clamp(24px, 2.4vw, 32px)",
           fontWeight: 700,
           color: "var(--mly-ink-900)",
-          letterSpacing: "-0.015em",
-          lineHeight: 1.2,
+          letterSpacing: "-0.02em",
+          lineHeight: 1.15,
           marginBottom: 8,
           margin: 0,
         }}
@@ -576,11 +619,11 @@ export function StepHead({
       {subtitle ? (
         <p
           style={{
-            color: "var(--mly-ink-600)",
-            fontSize: 15,
+            color: "var(--mly-ink-500)",
+            fontSize: 13,
             maxWidth: 760,
-            margin: "8px 0 0",
-            lineHeight: 1.55,
+            margin: "10px 0 0",
+            lineHeight: 1.6,
           }}
         >
           {subtitle}

@@ -118,7 +118,7 @@ export function ReportViewer({ report, reportId }: ReportViewerProps) {
       style={{
         position: "fixed",
         inset: 0,
-        background: "#f0f4f5",
+        background: "#f8f8f6",
         color: "var(--mly-ink-800)",
         display: "flex",
         flexDirection: "column",
