@@ -28,7 +28,7 @@ export function GeoFunnel({ funnel }: { funnel: DiscoverData["funnel"] }) {
       <div className="flow">
         {funnel.blocks.map((b, i) => (
           <Fragment key={`nm-${i}`}>
-            <div className={`fnl-nm${b.here ? " is-here" : ""}`}>
+            <div className={`fnl-nm fnl-nm-${i}${b.here ? " is-here" : ""}`}>
               <Rich value={b.nm} />
             </div>
             {i < funnel.arrows.length ? <div /> : null}

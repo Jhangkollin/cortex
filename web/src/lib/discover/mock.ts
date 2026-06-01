@@ -93,7 +93,7 @@ export const BASE_DATA: DiscoverData = {
   media: {
     sub: "Five outlets account for 91 % of mentions.",
     rows: [
-      { rk: "#1", nm: "鉅亨網", badge: "leader", vis: 38, clk: "142" },
+      { rk: "#1", nm: "鉅亨網", vis: 38, clk: "142" },
       { rk: "#2", nm: "數位時代", vis: 24, clk: "68" },
       { rk: "#3", nm: "CMoney", vis: 19, clk: "52" },
       { rk: "#4", nm: "早安健康", vis: 11, clk: "14" },
@@ -103,7 +103,7 @@ export const BASE_DATA: DiscoverData = {
   comp: {
     sub: "Same question set · 30-day window",
     rows: [
-      { nm: "Your brand", pct: 18.4, you: true },
+      { nm: "Acme Bank Asia", pct: 18.4, you: true },
       { nm: "Competitor A", pct: 34.2, lead: true },
       { nm: "Competitor B", pct: 12.1 },
       { nm: "Competitor C", pct: 8.3 },

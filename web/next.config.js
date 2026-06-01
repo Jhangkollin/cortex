@@ -1,6 +1,8 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   output: "standalone",
+  // Allow ngrok tunnels for local sharing — pattern covers all ngrok subdomains.
+  allowedDevOrigins: ["*.ngrok-free.app", "*.ngrok.io"],
   turbopack: {
     root: __dirname,
   },

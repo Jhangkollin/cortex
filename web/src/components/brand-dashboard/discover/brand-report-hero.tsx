@@ -246,7 +246,7 @@ function ReadyHero({ report, onDismiss }: ReadyHeroProps): ReactElement {
             color: "var(--paper-ink)",
           }}
         >
-          {subject} 的品牌側寫已準備好——下載你的第一份報告
+          {subject} 的品牌側寫已準備好，下載你的第一份報告
         </h2>
         <p
           style={{
