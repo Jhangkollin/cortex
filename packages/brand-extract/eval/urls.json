@@ -1,0 +1,10 @@
+[
+  {"url": "https://www.esunbank.com.tw", "vertical": "banking", "js": false},
+  {"url": "https://www.cathaybk.com.tw", "vertical": "banking", "js": false},
+  {"url": "https://www.notion.so", "vertical": "saas", "js": true},
+  {"url": "https://www.figma.com", "vertical": "saas", "js": true},
+  {"url": "https://www.allbirds.com", "vertical": "retail", "js": true},
+  {"url": "https://www.patagonia.com", "vertical": "retail", "js": false},
+  {"url": "https://stripe.com", "vertical": "fintech", "js": true},
+  {"url": "https://www.hubspot.com", "vertical": "martech", "js": true}
+]

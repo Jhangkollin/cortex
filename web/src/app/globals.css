@@ -1,0 +1,1821 @@
+@import "./tokens.css";
+@import "tailwindcss";
+@config "../../tailwind.config.ts";
+
+:root {
+  /* Light Edition (Brand IQ paper-cream aesthetic) — added 2026-05-27 */
+  --paper:             #F4EDDF;
+  --paper-warm:        #ECE3D0;
+  --paper-deep:        #DCCFB2;
+  --card-white:        #FFFFFF;
+  --paper-border:      #D8CFB8;
+  --paper-border-soft: #E5DCC4;
+  --paper-ink:         #1F1B14;
+  --paper-ink-2:       #3D362A;
+  --paper-ink-3:       #6E6045;
+  --paper-ink-4:       #9A8C6E;
+  --ink-warm-50:       #FBF7EE;
+  --gold:              #B98821;
+  --gold-soft:         #F1E4C1;
+  --gold-deep:         #8B6314;
+  --lime-deep:         #5A8E2A;
+  --lime-soft:         #E5EFD1;
+  --brand-teal:        #1C726B;
+  --brand-teal-soft:   #E0EAE8;
+  --gold-border:       #E0CC8E;
+
+  /* RGB-form companions of Light Edition tokens for rgba()/color-mix() consumers.
+     Use as `rgba(var(--gold-rgb), 0.45)` instead of hand-encoding the triplet. */
+  --gold-rgb:         185, 136, 33;
+  --brand-teal-rgb:   28, 114, 107;
+  --lime-deep-rgb:    90, 142, 42;
+  --paper-ink-rgb:    31, 27, 20;
+
+  /* Promoted from inline magic hex literals in onboarding-v2 launch surfaces. */
+  --paper-highlight:        #FBF6E8;   /* warmest cream gradient stop */
+  --lime-soft-border:       #C9DCA5;   /* one-off lime-soft outline */
+  --brand-teal-soft-border: #BCD3D0;   /* one-off teal-soft outline */
+
+  /* Soft-red surfaces on Light Edition report pages. Used for tier-1
+     competitor / high-severity risk cards where the prototype intentionally
+     keeps a red signal even after the dark→light flip (handoff §5: risk
+     colors don't change — visibility matters). The bg/border pair is the
+     same shade as #FCEAEA/#F0B5B5 in the Engineering Handoff prototype. */
+  --danger-soft:            #FCEAEA;
+  --danger-soft-border:     #F0B5B5;
+
+  /* Darker red companion to --mly-danger (#E53935). Needed for solid badges
+     that carry white text (critical-risk pill on P8): #fff on --mly-danger
+     measures ~4.0:1 and fails WCAG AA, whereas #fff on --danger-deep
+     measures ~5.9:1 and passes AA comfortably. */
+  --danger-deep:            #C62828;
+
+  /* Faintest hairline — separators inside cards (e.g. risk-card 建議
+     sub-section on P8). One shade lighter than --paper-border-soft. Uses the
+     literal 31, 27, 20 triplet (matches --paper-ink-rgb) because nesting
+     var() inside rgba() inside a CSS variable definition is browser-dependent
+     and we want this token to compute reliably everywhere it's consumed. */
+  --paper-border-faint:     rgba(31, 27, 20, 0.12);
+}
+
+html,
+body {
+  margin: 0;
+  background: #f0f4f5;
+  color: var(--fg);
+  font: var(--text-body);
+}
+
+body {
+  font-feature-settings: "rlig" 1, "calt" 1, "tnum" 1;
+}
+
+/* Sidebar v1.2 · Aurora Mist surface recipe (canonical, from design handoff
+   spatial-canvas.css `.sb`). Mist base + 3 blurred aurora radials (::before,
+   inset past edges, blur 18px — needs the aside's overflow:hidden) + 14%
+   SVG turbulence grain (::after, mix-blend overlay — keeps the radials
+   reading as a surface, not a wash). The data-URI is inlined exactly as
+   the handoff specifies; do not externalise. All real children of the
+   aside must set z-index: 2 to sit above the layers. */
+.sb {
+  position: relative;
+  z-index: 1;
+  overflow: hidden;
+  background: var(--sidebar-bg-mist);
+  border-right: 1px solid var(--sidebar-border-mist);
+}
+.sb::before,
+.sb::after {
+  content: none;
+}
+
+/* Material Symbols Outlined — used in icon-as-text spans across the app shell.
+   The font is imported via tokens.css; this class normalises sizing/baseline. */
+.material-icons-outlined {
+  font-family: "Material Icons Outlined";
+  font-weight: normal;
+  font-style: normal;
+  line-height: 1;
+  letter-spacing: normal;
+  text-transform: none;
+  display: inline-block;
+  white-space: nowrap;
+  word-wrap: normal;
+  direction: ltr;
+  -webkit-font-feature-settings: "liga";
+  -webkit-font-smoothing: antialiased;
+}
+
+@keyframes mly-pulse {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.4;
+  }
+}
+
+@keyframes mly-fade-up {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes mly-fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes mly-pop-in {
+  0% {
+    opacity: 0;
+    transform: scale(0.85);
+  }
+  70% {
+    transform: scale(1.04);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes mly-radar-sweep {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes mly-caret-blink {
+  0%,
+  50% {
+    opacity: 1;
+  }
+  51%,
+  100% {
+    opacity: 0;
+  }
+}
+
+@keyframes mly-scan-line {
+  0% {
+    transform: translateY(0%);
+  }
+  100% {
+    transform: translateY(2400%);
+  }
+}
+
+@keyframes br-orbit {
+  from { transform: rotate(0deg); }
+  to   { transform: rotate(360deg); }
+}
+
+@keyframes br-glow {
+  0%, 100% { box-shadow: 0 0 0 0   rgba(185, 136, 33, 0.40),
+                          0 0 32px 0   rgba(185, 136, 33, 0.25); }
+  50%      { box-shadow: 0 0 0 6px rgba(185, 136, 33, 0),
+                          0 0 64px 8px rgba(185, 136, 33, 0.10); }
+}
+
+@keyframes br-shimmer {
+  0%   { background-position: -240px 0; }
+  100% { background-position:  240px 0; }
+}
+
+@keyframes br-confetti {
+  0%   { transform: translateY(-10px) rotate(0deg);   opacity: 0; }
+  10%  { opacity: 1; }
+  90%  { opacity: 1; }
+  100% { transform: translateY(120vh) rotate(720deg); opacity: 0; }
+}
+
+@keyframes br-fade-in {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+
+/* /onboarding/v2 + /onboarding/v2/zh-TW — fluid rail + responsive grids.
+   The design was crafted at 1280px content width. On wider displays we
+   widen the rail and add columns inside the data-dense steps rather than
+   zooming the whole thing — keeps text at design scale and lets the
+   extra canvas carry more content.
+
+   .onb-rail (used by TopBar, content body, footer, and Step 7's slim
+   topbar): a centered block with 48px combined side padding and a
+   tier-bumped cap. The min(100% - 48px, cap) form preserves side breathing
+   room even when the viewport is just past a breakpoint.
+
+   Internal grid helpers kick in at ≥1700vw (the "big monitor" threshold):
+     onb-grid-2-3   products / media cards · 2 cols → 3 cols
+     onb-grid-1-2   weekly questions list · stacked → 2 cols
+     onb-grid-launch  step 5 settings:preview · 1:1 → 7:6 */
+.onboarding-v2-root .onb-rail {
+  --onb-cap: 1280px;
+  width: min(100% - 48px, var(--onb-cap));
+  margin-inline: auto;
+}
+@media (min-width: 1440px) {
+  .onboarding-v2-root .onb-rail {
+    --onb-cap: 1440px;
+  }
+}
+@media (min-width: 1700px) {
+  .onboarding-v2-root .onb-rail {
+    --onb-cap: 1680px;
+  }
+}
+@media (min-width: 1920px) {
+  .onboarding-v2-root .onb-rail {
+    --onb-cap: 1880px;
+  }
+}
+
+.onboarding-v2-root .onb-grid-2-3 {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+}
+@media (min-width: 1700px) {
+  .onboarding-v2-root .onb-grid-2-3 {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+.onboarding-v2-root .onb-grid-1-2 {
+  display: grid;
+  grid-template-columns: 1fr;
+}
+@media (min-width: 1700px) {
+  .onboarding-v2-root .onb-grid-1-2 {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+.onboarding-v2-root .onb-grid-launch {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+}
+@media (min-width: 1700px) {
+  .onboarding-v2-root .onb-grid-launch {
+    grid-template-columns: 7fr 6fr;
+  }
+}
+
+/* Shell content rail (per design handoff v1.1 §05).
+   Width caps at --shell-rail-cap (1280 below 1600vw, 1760 at/above),
+   horizontally padded by --shell-rail-pad (32 / 48), and centered.
+   Used by both topbar inner content and main page content so tabs
+   align with the first KPI card at every viewport width. */
+.shell-rail {
+  width: min(
+    100% - calc(var(--shell-rail-pad) * 2),
+    var(--shell-rail-cap)
+  );
+  margin-inline: auto;
+}
+
+/* ============================================================
+   GEO Monitor / Discover dashboard — Aurora Mist v1.2
+   (Color-bridge sidebar seam + cream stage)
+   Ported from design bundle cortex/project/cortex/discover.css.
+   Only ships the chosen variants:
+     - data-seam="bridge"      (sidebar/stage color bridge)
+     - data-composer="combined" (hero card + drawer + FAB)
+   Other variants (hard/fade/glow seams, dock composer, etc.)
+   omitted; reintroduce if the spec re-opens the toggle.
+   ============================================================ */
+
+/* App shell — 240px light sidebar + cream stage. Direction-C content
+   needs ~1200px of stage width; the shell carries a min-width so the
+   whole page scrolls horizontally when the viewport is narrower. */
+.geo-app {
+  display: grid;
+  grid-template-columns: 240px minmax(0, 1fr);
+  min-height: 100vh;
+  min-width: 1320px;
+  background: #f0f4f5;
+  font-family: var(--font-sans);
+  color: var(--mly-ink-800);
+  transition: grid-template-columns 280ms cubic-bezier(0.4, 0, 0.2, 1),
+              min-width 280ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+.geo-app > .pg {
+  min-height: 100vh;
+}
+/* .sb's height is owned solely by the `.geo-app > .sb` block below
+   (height: 100vh) — keep it out of this shared floor so there's one
+   authoritative source for the sidebar's height. */
+.geo-app[data-sidebar="closed"] {
+  grid-template-columns: 0 minmax(0, 1fr);
+  min-width: 1080px;
+}
+.geo-app[data-sidebar="closed"] > .sb {
+  transform: translateX(-100%);
+  opacity: 0;
+  pointer-events: none;
+  border-right: none !important;
+}
+.geo-app > .sb {
+  /* Pin the sidebar to the viewport so it stays full-height and its mist
+     surface always covers the column. Without this the sidebar is only
+     100vh tall while the grid row grows with the (taller) scrolling stage,
+     exposing the white .geo-app background below it.
+
+     INVARIANT: this relies on page-body scroll — no ancestor between .sb
+     and the viewport (.geo-app, body, html) may set overflow other than
+     visible. Adding overflow: auto/hidden/scroll to .geo-app or body would
+     un-stick the sidebar and re-introduce the white-gap regression.
+     align-self: start is required because grid's default align-self:stretch
+     would otherwise override the explicit height. */
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  align-self: start;
+  transition: transform 280ms cubic-bezier(0.4, 0, 0.2, 1),
+              opacity 200ms ease;
+}
+
+/* Sidebar collapse chevron (top-right of sidebar). */
+.sb-collapse {
+  position: absolute;
+  top: 18px;
+  right: 8px;
+  z-index: 6;
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  background: rgba(255, 255, 255, 0.7);
+  border: 1px solid rgba(28, 114, 107, 0.22);
+  color: var(--mly-ink-600);
+  cursor: pointer;
+  backdrop-filter: blur(4px);
+  transition: background 120ms, color 120ms;
+  padding: 0;
+}
+.sb-collapse:hover {
+  background: #fff;
+  color: var(--mly-teal-700);
+}
+.sb-collapse .material-icons-outlined {
+  font-size: 18px;
+}
+
+/* Reveal pill — top-left of the stage when sidebar is hidden. */
+.sb-reveal {
+  position: fixed;
+  top: 22px;
+  left: 14px;
+  z-index: 10;
+  width: 36px;
+  height: 36px;
+  border-radius: 8px;
+  display: grid;
+  place-items: center;
+  background: rgba(255, 255, 255, 0.92);
+  border: 1px solid rgba(28, 114, 107, 0.22);
+  color: var(--mly-teal-700);
+  cursor: pointer;
+  box-shadow: 0 4px 14px rgba(28, 114, 107, 0.14);
+  backdrop-filter: blur(6px);
+  transition: background 120ms, transform 120ms;
+  padding: 0;
+  animation: sb-reveal-in 240ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+.sb-reveal:hover {
+  background: #fff;
+  transform: translateX(2px);
+}
+.sb-reveal .material-icons-outlined {
+  font-size: 20px;
+}
+@keyframes sb-reveal-in {
+  from {
+    opacity: 0;
+    transform: translateX(-12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+.geo-app[data-sidebar="closed"] > .pg {
+  padding-left: 64px;
+}
+
+/* Color-bridge seam — sidebar bg fades to cream on its right edge;
+   stage left edge picks up the mist tint. Surfaces meet in the middle. */
+.geo-app[data-seam="bridge"] .sb {
+  border-right: none;
+  background: #ffffff;
+}
+.geo-app[data-seam="bridge"] .pg {
+  background: #f0f4f5;
+}
+
+/* Inner-sidebar grouped IA — section labels between nav items. */
+.sb .lab {
+  font-size: 10.5px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  color: var(--mly-ink-400);
+  text-transform: uppercase;
+  padding: 14px 12px 6px;
+  position: relative;
+  z-index: 2;
+}
+
+/* User footer popover — v2.1 designer redesign (handoff-v2 dashboard.jsx
+   MistSidebar + discover.css 1325-1411). Replaces the v1.2 static row
+   (avatar + name + bare gear + sibling sign-out) with a single trigger
+   button that opens an above-the-trigger menu containing Account
+   settings / Reset demo / Sign out (danger). The `.av` recipe is kept
+   verbatim (round 34×34 teal-gradient circle with the user initial); only
+   the surrounding layout moves onto `.user-trigger`. */
+.sb .user {
+  margin-top: auto;
+  position: relative;
+  z-index: 2;
+  border-top: 1px solid rgba(118, 180, 170, 0.55);
+  padding-top: 8px;
+}
+.sb .user-trigger {
+  display: flex;
+  align-items: center;
+  gap: 11px;
+  padding: 6px 4px;
+  width: 100%;
+  background: transparent;
+  border: 0;
+  border-radius: 8px;
+  cursor: pointer;
+  color: inherit;
+  text-align: left;
+  transition: background 120ms;
+}
+.sb .user-trigger:hover { background: rgba(20, 73, 72, 0.05); }
+.sb .user .av {
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  font-weight: 700;
+  font-size: 13px;
+  background: linear-gradient(135deg, var(--mly-teal-400), var(--mly-teal-700));
+  color: #fff;
+  box-shadow: 0 0 0 1px rgba(20, 73, 72, 0.10);
+  flex-shrink: 0;
+}
+.sb .user-trigger .who {
+  flex: 1;
+  min-width: 0;
+  font-size: 13px;
+  font-weight: 500;
+  line-height: 1.25;
+  color: var(--mly-ink-900);
+  font-family: var(--font-sans);
+}
+.sb .user-trigger .who small {
+  display: block;
+  color: var(--mly-ink-500);
+  font-size: 11px;
+  font-weight: 400;
+}
+.sb .user-trigger .chev {
+  color: var(--mly-ink-400);
+  font-size: 18px;
+  transition: color 120ms;
+  flex-shrink: 0;
+}
+.sb .user-trigger:hover .chev,
+.sb .user-trigger[aria-expanded="true"] .chev {
+  color: var(--mly-ink-700);
+}
+
+/* Popover menu — anchored above the trigger */
+.sb .user-menu {
+  position: absolute;
+  bottom: calc(100% + 6px);
+  left: 4px;
+  right: 4px;
+  z-index: 5;
+  background: #fff;
+  border: 1px solid var(--mly-border-soft);
+  border-radius: 8px;
+  padding: 6px;
+  box-shadow: 0 12px 28px rgba(0, 0, 0, 0.12), 0 4px 10px rgba(0, 0, 0, 0.06);
+  animation: userMenuIn 140ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+@keyframes userMenuIn {
+  from { opacity: 0; transform: translateY(4px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+.sb .user-menu-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  padding: 8px 10px;
+  background: transparent;
+  border: 0;
+  border-radius: 6px;
+  font: 500 13px var(--font-sans);
+  color: var(--mly-ink-800);
+  cursor: pointer;
+  text-align: left;
+  transition: background 100ms;
+}
+.sb .user-menu-item:hover { background: var(--mly-ink-050); }
+.sb .user-menu-item .material-icons-outlined {
+  font-size: 17px;
+  color: var(--mly-ink-500);
+}
+.sb .user-menu-item.is-danger { color: var(--mly-danger); }
+.sb .user-menu-item.is-danger .material-icons-outlined { color: var(--mly-danger); }
+.sb .user-menu-item.is-danger:hover { background: #FDEAEA; }
+.sb .user-menu-sep {
+  height: 1px;
+  background: var(--mly-divider);
+  margin: 4px 2px;
+}
+
+/* ============================================================
+   STAGE — cream Direction C
+   ============================================================ */
+.pg {
+  min-height: 100vh;
+  padding: 32px 40px 64px;
+  background: #f0f4f5;
+  overflow-y: auto;
+}
+.sp {
+  background: #f0f4f5;
+}
+.sp .top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+  position: sticky;
+  top: 0;
+  z-index: 20;
+  background: transparent;
+  padding: 12px 32px;
+  margin: -24px -32px 20px;
+}
+/* v2: page-title block (replaces the v1.2 "Live · 12 min ago" left side) */
+.sp .top .left .page-title {
+  line-height: 1.25;
+}
+.sp .top .left .crumb {
+  font: 700 10px var(--font-mono);
+  color: var(--mly-teal-700);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  margin-bottom: 4px;
+}
+.sp .top .left h1 {
+  font: 700 32px/1.15 var(--font-serif);
+  letter-spacing: -0.02em;
+
+  color: var(--mly-ink-900);
+  margin: 0 0 4px;
+}
+.sp .top .left .subtitle {
+  font: 400 14px/1.5 var(--font-sans);
+  color: var(--mly-ink-700);
+}
+.sp .top .left .subtitle .muted {
+  color: var(--mly-ink-500);
+  font-family: var(--font-mono);
+  font-size: 11.5px;
+  margin-left: 4px;
+}
+.sp .top .right {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  background: #fff;
+  border: 1px solid #d5dee0;
+  border-radius: 12px;
+  padding: 12px 10px 12px 16px;
+  box-shadow: 0 1px 0 rgba(100, 120, 130, 0.06);
+}
+.sp .chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  height: 28px;
+  background: transparent;
+  border: none;
+  border-radius: 8px;
+  padding: 0 10px;
+  font: 500 13px var(--font-sans);
+  color: var(--mly-teal-500);
+  cursor: pointer;
+  transition: color 120ms;
+}
+.sp .chip:hover {
+  color: var(--mly-teal-700);
+}
+.sp .chip .chip-label {
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  text-decoration-color: var(--mly-teal-200);
+  transition: text-decoration-color 120ms;
+}
+.sp .chip:hover .chip-label {
+  text-decoration-color: var(--mly-teal-500);
+}
+.sp .chip .material-icons-outlined {
+  font-size: 15px;
+  color: currentColor;
+}
+.sp .chip.is-on {
+  color: var(--mly-teal-500);
+  font-weight: 500;
+}
+.sp .chip.is-on .material-icons-outlined {
+  color: currentColor;
+}
+.sp .btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  height: 28px;
+  background: #fff;
+  color: #144948;
+  border: 1px solid #144948;
+  border-radius: 5px;
+  padding: 0 12px;
+  font: 600 13px var(--font-sans);
+  cursor: pointer;
+  transition: background 120ms;
+}
+.sp .btn:hover {
+  background: var(--mly-ink-050);
+}
+.sp .btn .material-icons-outlined {
+  font-size: 15px;
+  color: #144948;
+}
+.sp .top .right .right-sep {
+  width: 1px;
+  height: 16px;
+  background: var(--border-soft);
+  flex-shrink: 0;
+  margin: 0 10px;
+}
+
+/* ---------- Hero KPI row (1 main + 3 minis) ---------- */
+.sp .hero {
+  display: grid;
+  grid-template-columns: 1.4fr 1fr 1fr 1fr;
+  gap: 12px;
+  margin-bottom: 28px;
+}
+.sp .card {
+  background: #fff;
+  border: 1px solid #d5dee0;
+  border-radius: 10px;
+  padding: 28px;
+  box-shadow: 0 1px 0 rgba(100, 120, 130, 0.08), 0 2px 8px rgba(80, 100, 110, 0.06);
+}
+.sp .hero .h-main {
+  position: relative;
+  overflow: hidden;
+  background: #fff;
+  border: 1px solid #d5dee0;
+}
+.sp .hero .h-main .lab {
+  font: 700 14px var(--font-sans);
+  letter-spacing: 0.05em;
+  color: var(--mly-ink-500);
+  text-transform: uppercase;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.sp .hero .h-main .lab .live {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font: 500 10px var(--font-mono);
+  color: var(--mly-teal-700);
+  letter-spacing: 0.02em;
+  text-transform: none;
+  margin-left: 8px;
+}
+.sp .hero .h-main .lab .live .d {
+  position: relative;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--mly-teal-700);
+  box-shadow: 0 0 0 3px rgba(28, 114, 107, 0.15);
+}
+.sp .hero .h-main .lab .live .d::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: rgba(28, 114, 107, 0.10);
+  animation: live-pulse 2.4s ease-in-out infinite;
+}
+@keyframes live-pulse {
+  0%, 100% { opacity: 0; transform: translate(-50%, -50%) scale(0.7); }
+  50%       { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+}
+.sp .hero .h-main .v {
+  font: 700 38px/1.05 var(--font-serif);
+  letter-spacing: -0.02em;
+  color: var(--mly-ink-900);
+  margin-top: 8px;
+  display: flex;
+  align-items: baseline;
+  gap: 6px;
+}
+.sp .hero .h-main .v sup {
+  font: 500 20px/1 var(--font-serif);
+  color: var(--mly-ink-400);
+  letter-spacing: -0.01em;
+}
+.sp .hero .h-main .sub {
+  margin-top: 10px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font: 500 13px var(--font-sans);
+  color: var(--mly-ink-600);
+}
+.sp .hero .h-main .sub .up {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  color: var(--mly-teal-700);
+  font-weight: 700;
+  background: #EAF5F2;
+  padding: 3px 8px;
+  border-radius: 999px;
+  font-size: 12.5px;
+}
+.sp .hero .h-main .spk {
+  position: absolute;
+  right: -1px;
+  bottom: -1px;
+  width: 54%;
+  pointer-events: none;
+  opacity: 0.9;
+}
+.sp .hero .mini {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 0;
+}
+.sp .hero .mini .lab {
+  font: 700 14px var(--font-sans);
+  letter-spacing: 0.05em;
+  color: var(--mly-ink-500);
+  text-transform: uppercase;
+}
+.sp .hero .mini .v {
+  font: 700 38px/1.05 var(--font-serif);
+
+  color: var(--mly-ink-900);
+  letter-spacing: -0.02em;
+  margin-top: 8px;
+}
+.sp .hero .mini .row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  margin-top: 14px;
+  font: 500 12px var(--font-mono);
+  color: var(--mly-ink-500);
+}
+.sp .hero .mini .row b {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  color: var(--mly-teal-700);
+  font-weight: 700;
+  background: #EAF5F2;
+  padding: 3px 8px;
+  border-radius: 999px;
+  font-size: 12px;
+}
+/* v2: KPI mini cards — sparkline replaces the progress bar */
+.sp .hero .mini {
+  padding-bottom: 14px;
+}
+.sp .hero .mini .row {
+  margin-top: 8px;
+  margin-bottom: 6px;
+}
+.sp .hero .mini .mini-spk {
+  display: block;
+  width: 100%;
+  height: 28px;
+  margin-top: 4px;
+  opacity: 0.9;
+}
+
+/* v2: AI Insight banner removed — superseded by .sp .alerts (Cortex Discover v2 block below). */
+
+/* ---------- GEO funnel ---------- */
+.sp .funnel {
+  padding: 28px 28px 28px;
+  background: #fff;
+  border: 1px solid #d5dee0;
+  border-radius: 10px;
+  margin-bottom: 28px;
+  box-shadow: 0 1px 0 rgba(100, 120, 130, 0.08), 0 2px 8px rgba(80, 100, 110, 0.06);
+}
+.sp .funnel .fh {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  margin-bottom: 18px;
+}
+.sp .funnel .fh h3 {
+  margin: 0;
+  font: 700 22px/1.2 var(--font-serif);
+  color: var(--mly-ink-900);
+}
+.sp .funnel .fh h3 small {
+  display: block;
+  font: 400 12px var(--font-sans);
+  color: var(--mly-ink-500);
+  margin-top: 3px;
+}
+.sp .funnel .flow {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr auto 1.1fr auto 1fr auto 1fr;
+  align-items: stretch;
+  gap: 8px 14px;
+  padding-top: 8px;
+}
+.sp .funnel .fnl-nm {
+  font: 500 14px var(--font-sans);
+  color: var(--mly-ink-800);
+  letter-spacing: 0.005em;
+  background: #EDF7EE;
+  padding: 0 10px;
+  border-radius: 8px;
+  text-align: center;
+  height: 52px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.sp .funnel .fnl-nm b {
+  color: var(--mly-ink-900);
+  font-weight: 700;
+}
+/* teal progression left→right: 200 > 400 > 700 > 800 > 900 */
+.sp .funnel .fnl-nm:nth-child(1) { background: var(--mly-teal-200); }
+.sp .funnel .fnl-nm:nth-child(3) { background: var(--mly-teal-400); }
+.sp .funnel .fnl-nm:nth-child(5) { background: var(--mly-teal-700); color: #fff; }
+.sp .funnel .fnl-nm:nth-child(5) b { color: #fff; }
+.sp .funnel .fnl-nm:nth-child(7) { background: var(--mly-teal-800); color: #fff; }
+.sp .funnel .fnl-nm:nth-child(7) b { color: #fff; }
+.sp .funnel .fnl-nm:nth-child(9) { background: var(--mly-teal-900); color: #fff; }
+.sp .funnel .fnl-nm:nth-child(9) b { color: #fff; }
+.sp .funnel .fnl-v {
+  font: 700 30px/1 var(--font-serif);
+  letter-spacing: -0.018em;
+  color: var(--mly-ink-900);
+  text-align: center;
+  padding: 12px 0;
+}
+.sp .funnel .conn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  align-self: center;
+}
+.sp .funnel .conn .r {
+  font: 600 12px var(--font-mono);
+  color: var(--mly-ink-800);
+}
+.sp .funnel .conn .l {
+  font: 400 10px var(--font-mono);
+  color: var(--mly-ink-400);
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+.sp .funnel .conn svg {
+  display: block;
+}
+
+/* ---------- Bottom grid (Top media + competitor visibility) ---------- */
+.sp .grid {
+  display: grid;
+  grid-template-columns: 1.45fr 1fr;
+  gap: 12px;
+}
+.sp .grid .card h3 {
+  margin: 0 0 2px;
+  font: 700 22px/1.2 var(--font-serif);
+  color: var(--mly-ink-900);
+}
+.sp .grid .card .ch {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  margin-bottom: 14px;
+}
+.sp .grid .card .ch a {
+  font: 500 12.5px var(--font-sans);
+  color: var(--mly-teal-700);
+  text-decoration: none;
+}
+.sp .grid .card .sub {
+  font: 400 12px var(--font-sans);
+  color: var(--mly-ink-500);
+  margin-top: 3px;
+}
+.sp .media .row {
+  display: grid;
+  grid-template-columns: 22px 1.4fr 2fr 50px 50px;
+  gap: 14px;
+  align-items: center;
+  padding: 10px 0;
+  border-top: 1px solid var(--border-soft);
+  font-size: 13.5px;
+}
+.sp .media .row.head {
+  border-top: none;
+  padding-top: 0;
+  padding-bottom: 9px;
+  border-bottom: 1px solid #d5dee0;
+  font: 700 10.5px var(--font-sans);
+  letter-spacing: 0.1em;
+  color: var(--mly-ink-500);
+  text-transform: uppercase;
+}
+.sp .media .row .rk {
+  font: 700 11.5px var(--font-numeric);
+  color: var(--mly-ink-400);
+}
+.sp .media .row .nm {
+  font-weight: 600;
+  color: var(--mly-ink-900);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.sp .media .row .nm .badge {
+  font: 600 9px var(--font-sans);
+  letter-spacing: 0.06em;
+  background: #EAF5F2;
+  color: var(--mly-teal-700);
+  padding: 2px 5px;
+  border-radius: 3px;
+  text-transform: uppercase;
+}
+.sp .media .row .bar {
+  position: relative;
+  height: 24px;
+  display: flex;
+  align-items: center;
+}
+.sp .media .row .bar i {
+  height: 8px;
+  border-radius: 4px;
+  background: linear-gradient(90deg, var(--mly-teal-700), var(--mly-teal-400));
+}
+.sp .media .row .pct {
+  font: 600 13px var(--font-numeric);
+  color: var(--mly-ink-900);
+  text-align: right;
+}
+.sp .media .row .clk {
+  font: 500 12.5px var(--font-mono);
+  color: var(--mly-ink-500);
+  text-align: right;
+}
+.sp .comp .h2h {
+  display: block;
+  padding: 10px 0;
+}
+.sp .comp .h2h-hd {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  margin-bottom: 6px;
+}
+.sp .comp .h2h .nm {
+  font: 500 12.5px var(--font-sans);
+  color: var(--mly-ink-700);
+}
+.sp .comp .h2h .lbl {
+  font: 600 12px var(--font-numeric);
+  color: var(--mly-ink-500);
+  letter-spacing: -0.01em;
+}
+.sp .comp .h2h .track {
+  position: relative;
+  height: 8px;
+  background: #dde1e5;
+  border-radius: 2px;
+  overflow: hidden;
+}
+.sp .comp .h2h .track i {
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  background: var(--mly-teal-400);
+  border-radius: 2px;
+}
+.sp .comp .legend {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 14px;
+  padding-top: 12px;
+  border-top: 1px dashed #d5dee0;
+  font: 500 12px var(--font-mono);
+  color: var(--mly-ink-500);
+}
+.sp .comp .legend b {
+  color: #9A4D1B;
+  font-weight: 700;
+}
+
+/* ============================================================
+   Cortex Composer — chat input + model picker
+   ============================================================ */
+.cmp {
+  --cmp-bg: #FFFFFF;
+  --cmp-border: #d5dee0;
+  --cmp-radius: 14px;
+  position: relative;
+  background: var(--cmp-bg);
+  border: 1px solid var(--cmp-border);
+  border-radius: var(--cmp-radius);
+  box-shadow: 0 1px 0 rgba(100, 120, 130, 0.06), 0 4px 18px rgba(80, 100, 110, 0.08);
+}
+.cmp .cmp-input {
+  display: block;
+  width: 100%;
+  padding: 20px 22px 8px;
+  font: 400 16px var(--font-sans);
+  color: var(--mly-ink-900);
+  background: transparent;
+  border: none;
+  outline: none;
+  resize: none;
+}
+.cmp .cmp-input::placeholder {
+  color: var(--mly-ink-400);
+}
+.cmp .cmp-foot {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px 12px;
+}
+.cmp .cmp-foot .grow {
+  flex: 1;
+}
+.cmp .cmp-version {
+  font: 400 11px var(--font-mono);
+  color: var(--mly-ink-400);
+  letter-spacing: 0.02em;
+}
+.cmp .cmp-plus,
+.cmp .cmp-mic {
+  width: 34px;
+  height: 34px;
+  border-radius: 999px;
+  display: grid;
+  place-items: center;
+  background: transparent;
+  border: 1px solid transparent;
+  color: var(--mly-ink-500);
+  cursor: pointer;
+  transition: background 120ms, color 120ms, border-color 120ms;
+}
+.cmp .cmp-plus:hover,
+.cmp .cmp-mic:hover {
+  background: var(--mly-ink-050);
+  color: var(--mly-ink-800);
+  border-color: var(--mly-ink-150);
+}
+.cmp .cmp-plus .material-icons-outlined,
+.cmp .cmp-mic .material-icons-outlined {
+  font-size: 18px;
+}
+.cmp .cmp-send {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 9px 16px;
+  background: var(--mly-teal-700);
+  color: #fff;
+  border: none;
+  border-radius: 10px;
+  font: 600 13px var(--font-sans);
+  cursor: pointer;
+  transition: background 120ms, transform 120ms;
+}
+.cmp .cmp-send:hover {
+  background: var(--mly-teal-800);
+}
+.cmp .cmp-send:active {
+  transform: translateY(1px);
+}
+.cmp .cmp-send .material-icons-outlined {
+  font-size: 16px;
+}
+
+/* Model pill + picker popover */
+.mdl-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 10px 6px 6px;
+  background: #fff;
+  border: 1px solid var(--mly-ink-150);
+  border-radius: 999px;
+  font: 500 13px var(--font-sans);
+  color: var(--mly-ink-800);
+  cursor: pointer;
+  transition: background 120ms, border-color 120ms;
+}
+.mdl-pill:hover {
+  background: var(--mly-ink-025);
+  border-color: var(--mly-teal-200);
+}
+.mdl-pill .mdl-ic {
+  width: 22px;
+  height: 22px;
+  border-radius: 6px;
+  display: grid;
+  place-items: center;
+  background: linear-gradient(135deg, #144948, #1C726B);
+  color: #fff;
+}
+.mdl-pill .mdl-ic .material-icons-outlined {
+  font-size: 14px;
+}
+.mdl-pill .mdl-tag {
+  font: 700 9px var(--font-sans);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  background: var(--mly-ink-100);
+  color: var(--mly-ink-700);
+  padding: 3px 6px;
+  border-radius: 4px;
+}
+.mdl-pill .mdl-chev {
+  font-size: 16px !important;
+  color: var(--mly-ink-400);
+  margin-left: 2px;
+}
+.mdl-pop {
+  position: fixed;
+  z-index: 90;
+  width: 400px;
+  background: #ffffff;
+  border: 1px solid #d5dee0;
+  border-radius: 12px;
+  box-shadow: 0 24px 60px rgba(60, 80, 90, 0.18), 0 8px 24px rgba(60, 80, 90, 0.10);
+  padding: 14px 12px 12px;
+  animation: mdl-pop-in 180ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+@keyframes mdl-pop-in {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+.mdl-pop .mdl-header {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font: 700 10px var(--font-sans);
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--mly-ink-500);
+  padding: 4px 10px 10px;
+}
+.mdl-pop .mdl-header b {
+  color: var(--mly-teal-700);
+  font-weight: 700;
+}
+.mdl-pop .mdl-auto {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px;
+  border-radius: 8px;
+  cursor: pointer;
+  background: #ECE9DB;
+  transition: background 120ms;
+}
+.mdl-pop .mdl-auto:hover {
+  background: #E5E0CC;
+}
+.mdl-pop .mdl-auto .mdl-ic {
+  width: 36px;
+  height: 36px;
+  border-radius: 8px;
+  background: linear-gradient(135deg, #144948, #1C726B);
+  color: #fff;
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+}
+.mdl-pop .mdl-auto .mdl-ic .material-icons-outlined {
+  font-size: 20px;
+}
+.mdl-pop .mdl-auto .mdl-body {
+  flex: 1;
+  min-width: 0;
+}
+.mdl-pop .mdl-auto .mdl-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font: 700 15px var(--font-sans);
+  color: var(--mly-ink-900);
+}
+.mdl-pop .mdl-auto .mdl-title .mdl-tag {
+  font: 700 9px var(--font-sans);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  background: var(--mly-ink-900);
+  color: #fff;
+  padding: 3px 6px;
+  border-radius: 4px;
+}
+.mdl-pop .mdl-auto .mdl-desc {
+  margin-top: 2px;
+  font: 400 12.5px var(--font-sans);
+  color: var(--mly-ink-500);
+}
+.mdl-pop .mdl-auto .mdl-check {
+  font-size: 18px !important;
+  color: var(--mly-teal-700);
+  flex-shrink: 0;
+}
+.mdl-pop hr {
+  border: none;
+  border-top: 1px solid var(--mly-ink-150);
+  margin: 12px 8px;
+}
+.mdl-pop .mdl-section {
+  font: 700 10px var(--font-sans);
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--mly-ink-500);
+  padding: 0 10px 8px;
+}
+.mdl-pop .mdl-row {
+  display: grid;
+  grid-template-columns: 28px 1fr auto;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 10px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background 120ms;
+}
+.mdl-pop .mdl-row:hover {
+  background: rgba(28, 114, 107, 0.05);
+}
+.mdl-pop .mdl-row[data-selected="true"] {
+  background: rgba(28, 114, 107, 0.07);
+}
+.mdl-pop .mdl-row .mdl-ic {
+  color: var(--mly-ink-700);
+}
+.mdl-pop .mdl-row .mdl-ic .material-icons-outlined {
+  font-size: 22px;
+}
+.mdl-pop .mdl-row .mdl-title {
+  font: 600 14px var(--font-sans);
+  color: var(--mly-ink-900);
+}
+.mdl-pop .mdl-row .mdl-desc {
+  margin-top: 1px;
+  font: 400 12px var(--font-sans);
+  color: var(--mly-ink-500);
+}
+.mdl-pop .mdl-row .mdl-lat {
+  font: 500 12px var(--font-mono);
+  color: var(--mly-ink-500);
+  letter-spacing: 0.02em;
+}
+
+/* Hero composer card placement (below KPI row) */
+.cmp-hero {
+  margin-bottom: 14px;
+}
+.cmp-hero .cmp .cmp-input {
+  padding: 22px 22px 8px;
+  font-size: 17px;
+}
+.cmp-hero .cmp-disclaimer {
+  text-align: center;
+  margin-top: 8px;
+  font: 400 12px var(--font-sans);
+  color: var(--mly-ink-400);
+}
+.cmp-hero .cmp-suggest {
+  margin-top: 12px;
+  display: flex;
+  flex-direction: column;
+}
+.cmp-hero .cmp-suggest .row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 6px;
+  border-top: 1px solid rgba(100, 120, 130, 0.12);
+  font: 400 14px var(--font-sans);
+  color: var(--mly-ink-800);
+  cursor: pointer;
+  transition: color 120ms;
+}
+.cmp-hero .cmp-suggest .row:first-child {
+  border-top: none;
+}
+.cmp-hero .cmp-suggest .row:hover {
+  color: var(--mly-teal-700);
+}
+.cmp-hero .cmp-suggest .row .agent-tag {
+  display: inline-flex;
+  align-items: center;
+  margin-left: 6px;
+  padding: 2px 8px;
+  font: 600 10.5px var(--font-sans);
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  background: transparent;
+  color: var(--mly-ink-500);
+  border: 1px solid var(--mly-ink-150);
+  border-radius: 4px;
+}
+
+/* v2: Drawer trigger — bottom-right "Ask Cortex ⌘K" pill (replaces v1.2 top-right square) */
+.cmp-drawer-trigger {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  z-index: 100;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  height: 44px;
+  padding: 0 16px 0 12px;
+  background: var(--mly-teal-800);
+  color: #fff;
+  border: none;
+  border-radius: 999px;
+  font: 600 13px var(--font-sans);
+  cursor: pointer;
+  box-shadow: 0 8px 24px rgba(20, 73, 72, 0.32), 0 0 0 1px rgba(56, 166, 154, 0.18);
+  transition: transform 160ms cubic-bezier(0.4, 0, 0.2, 1), box-shadow 200ms;
+}
+.cmp-drawer-trigger::after {
+  content: "⌘K";
+  font: 500 10.5px "Roboto Mono", monospace;
+  background: rgba(255, 255, 255, 0.14);
+  color: rgba(255, 255, 255, 0.88);
+  padding: 2px 6px;
+  border-radius: 4px;
+  margin-left: 2px;
+}
+.cmp-drawer-trigger:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 14px 32px rgba(20, 73, 72, 0.40), 0 0 0 1px rgba(56, 166, 154, 0.28);
+}
+.cmp-drawer-trigger .cortex-mark {
+  flex-shrink: 0;
+  width: 24px;
+  height: 24px;
+  filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.2));
+  transition: filter 160ms;
+}
+.cmp-drawer-trigger:hover .cortex-mark {
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.3));
+}
+
+/* Drawer — right-rail slide-out */
+.cmp-drawer-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(20, 40, 40, 0.12);
+  z-index: 70;
+  animation: cmp-fade-in 200ms ease;
+}
+.cmp-drawer {
+  position: fixed;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  width: 420px;
+  z-index: 80;
+  background: #ffffff;
+  border-left: 1px solid #d5dee0;
+  box-shadow: -16px 0 48px rgba(60, 80, 90, 0.14);
+  display: flex;
+  flex-direction: column;
+  animation: cmp-slide-in 260ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+@keyframes cmp-slide-in {
+  from {
+    transform: translateX(100%);
+  }
+  to {
+    transform: translateX(0);
+  }
+}
+@keyframes cmp-fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+.cmp-drawer .head {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 16px 18px 14px;
+  border-bottom: 1px solid var(--mly-ink-150);
+}
+.cmp-drawer .head .title {
+  font: 700 15px var(--font-sans);
+  color: var(--mly-ink-900);
+}
+.cmp-drawer .head .grow {
+  flex: 1;
+}
+.cmp-drawer .head .close {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  background: transparent;
+  border: none;
+  color: var(--mly-ink-500);
+  cursor: pointer;
+  display: grid;
+  place-items: center;
+}
+.cmp-drawer .head .close:hover {
+  background: var(--mly-ink-050);
+  color: var(--mly-ink-800);
+}
+.cmp-drawer .head .close .material-icons-outlined {
+  font-size: 18px;
+}
+.cmp-drawer .empty {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  text-align: center;
+  gap: 16px;
+}
+.cmp-drawer .empty .hero-ic {
+  width: 64px;
+  height: 64px;
+  border-radius: 16px;
+  background: linear-gradient(135deg, var(--mly-teal-700), var(--mly-teal-400));
+  color: #fff;
+  display: grid;
+  place-items: center;
+  box-shadow: 0 10px 28px rgba(28, 114, 107, 0.32);
+}
+.cmp-drawer .empty .hero-ic .material-icons-outlined {
+  font-size: 32px;
+}
+.cmp-drawer .empty .hero-title {
+  font: 700 20px var(--font-sans);
+  color: var(--mly-ink-900);
+}
+.cmp-drawer .empty .hero-sub {
+  font: 400 13px/1.5 var(--font-sans);
+  color: var(--mly-ink-500);
+  max-width: 280px;
+}
+.cmp-drawer .empty .quick {
+  margin-top: 8px;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  width: 100%;
+  max-width: 320px;
+}
+.cmp-drawer .empty .quick button {
+  padding: 9px 12px;
+  font: 500 12.5px var(--font-sans);
+  background: #fff;
+  border: 1px solid var(--mly-ink-150);
+  color: var(--mly-ink-800);
+  border-radius: 999px;
+  cursor: pointer;
+  transition: background 120ms, border-color 120ms, color 120ms;
+}
+.cmp-drawer .empty .quick button:hover {
+  background: var(--mly-teal-050);
+  border-color: var(--mly-teal-200);
+  color: var(--mly-teal-700);
+}
+.cmp-drawer .foot {
+  padding: 12px 14px 14px;
+  border-top: 1px solid var(--mly-ink-150);
+  background: #ffffff;
+}
+.cmp-drawer .foot .cmp {
+  --cmp-radius: 12px;
+  box-shadow: none;
+}
+.cmp-drawer .foot .cmp .cmp-input {
+  padding: 14px 16px 6px;
+  font-size: 14px;
+}
+.cmp-drawer .foot .disclaimer {
+  margin-top: 8px;
+  text-align: center;
+  font: 400 11px var(--font-sans);
+  color: var(--mly-ink-400);
+}
+
+/* ============================================================
+   === Cortex Discover v2 ===
+   v1.2 → v2 recipe delta. Transcribed verbatim from the extracted
+   handoff bundle: cortex/discover.css (query strip, priority alerts,
+   funnel bottleneck/leverage + takeaway, competitor YOU/LEADER tags,
+   docked-drawer grid). Every selector is scoped under .sp / .geo-app
+   so nothing else in the app shifts. The page-title block, mini
+   sparkline, and bottom-right trigger pill were applied in place of
+   their superseded v1.2 rules above.
+   ============================================================ */
+
+
+/* ---- v2: Priority alerts (3 small intent-coded cards) ---- */
+.sp .alerts {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+  margin-bottom: 28px;
+}
+.sp .alert {
+  background: #fff;
+  border: 1px solid #d5dee0;
+  border-radius: 10px;
+  padding: 26px 18px 22px;
+  display: flex;
+  flex-direction: column;
+}
+.sp .alert-bot-row {
+  display: flex;
+  gap: 14px;
+  align-items: flex-start;
+  margin-bottom: 14px;
+  flex: 1;
+}
+.sp .alert-avatar-wrap {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 5px;
+  flex-shrink: 0;
+}
+.sp .alert-bot-name {
+  font: 600 9px var(--font-sans);
+  letter-spacing: 0.04em;
+  color: var(--mly-teal-700);
+  text-transform: uppercase;
+}
+.sp .alert-avatar {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: var(--mly-teal-050);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.sp .alert-avatar .material-icons-outlined {
+  font-size: 18px;
+  color: var(--mly-teal-700);
+}
+.sp .alert-content {
+  flex: 1;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  min-width: 0;
+  background: #f7fafa;
+  border-radius: 4px 10px 10px 10px;
+  padding: 14px 16px;
+}
+.sp .alert-content::before {
+  content: '';
+  position: absolute;
+  left: -7px;
+  top: 10px;
+  width: 0;
+  height: 0;
+  border-top: 6px solid transparent;
+  border-bottom: 6px solid transparent;
+  border-right: 7px solid #f7fafa;
+}
+.sp .alert-cat {
+  font: 700 9px var(--font-sans);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  padding: 2px 6px;
+  border-radius: 3px;
+  align-self: flex-start;
+}
+.sp .alert.is-warn .alert-cat {
+  background: #FBEFD8;
+  color: #8A4E11;
+}
+.sp .alert.is-opp .alert-cat {
+  background: #EAF5F2;
+  color: var(--mly-teal-700);
+}
+.sp .alert.is-sig .alert-cat {
+  background: var(--mly-ink-100);
+  color: var(--mly-ink-600);
+}
+.sp .alert-body {
+  font: 400 14px/1.55 var(--font-sans);
+  color: var(--mly-ink-800);
+  text-wrap: pretty;
+}
+.sp .alert-body b {
+  color: var(--mly-ink-900);
+  font-weight: 700;
+}
+.sp .alert-sub {
+  font: 400 12px/1.5 var(--font-sans);
+  color: var(--mly-ink-500);
+}
+.sp .alert-cta {
+  width: 100%;
+  margin-top: auto;
+  padding: 9px 16px;
+  background: #f4f9fa;
+  border: 1px solid var(--mly-teal-200);
+  border-radius: 8px;
+  font: 600 12.5px var(--font-sans);
+  color: var(--mly-teal-700);
+  cursor: pointer;
+  text-align: center;
+  transition: background 120ms;
+}
+.sp .alert-cta:hover { background: var(--mly-teal-050); }
+
+/* ---- v2: Funnel — bottleneck (danger) + leverage (success) + takeaway ---- */
+.sp .funnel .conn.is-bottleneck .r {
+  background: #FDEAEA;
+  color: var(--mly-danger);
+  padding: 2px 9px;
+  border-radius: 999px;
+  box-shadow: 0 0 0 2px rgba(229, 57, 53, 0.08);
+  font-weight: 700;
+}
+.sp .funnel .conn.is-leverage .r {
+  background: #DCF3E7;
+  color: #1E7A4C;
+  padding: 2px 9px;
+  border-radius: 999px;
+  box-shadow: 0 0 0 2px rgba(38, 166, 154, 0.12);
+  font-weight: 700;
+}
+.sp .funnel .conn.is-bottleneck .l b {
+  color: var(--mly-danger);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  font-size: 9.5px;
+}
+.sp .funnel .conn.is-leverage .l b {
+  color: #1E7A4C;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  font-size: 9.5px;
+}
+.sp .funnel .fnl-takeaway {
+  margin-top: 16px;
+  padding: 12px 16px;
+  background: #FFFBEF;
+  border: 1px solid var(--mly-warn);
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font: 400 13px/1.55 var(--font-sans);
+  color: var(--mly-ink-900);
+}
+.sp .funnel .fnl-takeaway .material-icons-outlined {
+  font-size: 18px;
+  color: var(--mly-warn-strong);
+}
+.sp .funnel .fnl-takeaway b {
+  color: var(--mly-ink-900);
+  font-weight: 700;
+}
+.sp .funnel .fnl-takeaway a {
+  margin-left: auto;
+  color: var(--mly-teal-700);
+  font: 600 12.5px var(--font-sans);
+  text-decoration: none;
+  white-space: nowrap;
+}
+.sp .funnel .fnl-takeaway a:hover {
+  text-decoration: underline;
+}
+
+.sp .comp .legend {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 14px;
+  padding-top: 12px;
+  border-top: 1px dashed var(--mly-ink-200);
+  font: 400 12.5px var(--font-sans);
+  color: var(--mly-ink-700);
+}
+.sp .comp .legend > span:first-child {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.sp .comp .legend .material-icons-outlined {
+  font-size: 16px;
+  color: var(--mly-danger);
+}
+.sp .comp .legend b {
+  color: var(--mly-danger);
+  font-weight: 700;
+  font-family: var(--font-numeric);
+  font-variant-numeric: tabular-nums;
+}
+
+/* ---- v2: Drawer as docked side-by-side panel (not overlay) ----
+   When .geo-app has data-drawer-open="true", the grid grows a third
+   420px column, pushing the dashboard left. The drawer stays
+   position:fixed so its slide-in animation works; the new grid column
+   reserves the space so content doesn't overlap. (The bare
+   `.geo-app { transition: grid-template-columns }` from discover.css is
+   intentionally omitted — the base `.geo-app` rule above already
+   transitions grid-template-columns + min-width; re-declaring it here
+   would clobber the min-width transition. Spec §2.3's add-list is the
+   five [data-drawer-open] rules only.) */
+.geo-app[data-drawer-open="true"] {
+  grid-template-columns: 244px 1fr 420px;
+}
+.geo-app[data-sidebar="closed"][data-drawer-open="true"] {
+  grid-template-columns: 0 1fr 420px;
+}
+.geo-app[data-drawer-open="true"] .cmp-drawer-backdrop {
+  display: none;
+}
+.geo-app[data-drawer-open="true"] .cmp-drawer-trigger {
+  display: none;
+}
+.geo-app[data-drawer-open="true"] .cmp-drawer {
+  box-shadow: none;
+  border-left: 1px solid var(--border-soft);
+}

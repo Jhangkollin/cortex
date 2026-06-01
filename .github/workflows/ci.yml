@@ -1,0 +1,110 @@
+name: CI
+
+on:
+  pull_request:
+    branches:
+      - develop
+      - main
+  push:
+    branches:
+      - develop
+      - main
+
+jobs:
+  api:
+    name: "api: lint + test"
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: api
+    services:
+      # Postgres for integration tests (tests/integration/). Unit tests don't
+      # use it but the service container only adds ~5s and is shared with the
+      # integration step. Port 5432 here — note the integration suite's
+      # local default is 5433 because docker-compose.yml maps :5433 to avoid
+      # Homebrew Postgres collisions on devs' laptops; CI has no such conflict.
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_USER: cortex_test
+          POSTGRES_PASSWORD: cortex_test
+          POSTGRES_DB: cortex_test
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
+    env:
+      # DatabaseConfig() assembles its DSN from these — same code path as
+      # the chart-projected env in prod, so any "CI passed, UAT broke"
+      # divergence here is at the chart level, not the test rig.
+      CORE_DB_HOST: localhost
+      CORE_DB_PORT: "5432"
+      CORE_DB_USERNAME: cortex_test
+      CORE_DB_PASSWORD: cortex_test
+      CORE_DB_NAME: cortex_test
+      # Same secret on both sides of the JWT — tests sign with the AuthConfig
+      # the running app verifies with.
+      CORE_AUTH_NEXTAUTH_SECRET: test-secret-not-for-prod
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v6
+        with:
+          enable-cache: true
+
+      - name: Set up Python
+        run: uv python install 3.12
+
+      - name: Sync deps
+        run: uv sync --all-extras
+
+      - name: Lint (ruff)
+        run: uv run ruff check src tests
+
+      - name: Format check (ruff)
+        run: uv run ruff format --check src tests
+
+      - name: Type check (mypy)
+        run: uv run mypy src
+
+      - name: Tests (pytest unit)
+        run: uv run pytest -m "not integration"
+
+      - name: Tests (pytest integration)
+        run: uv run pytest -m integration
+
+  web:
+    name: "web: lint + build + test"
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: web
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: "npm"
+          cache-dependency-path: web/package-lock.json
+
+      - run: npm ci
+      - run: npm run lint
+      - run: npm run type-check
+      - run: npm test
+      - run: npm run build
+
+  api-client-drift:
+    name: "api-client: drift check"
+    runs-on: ubuntu-latest
+    needs:
+      - api
+      - web
+    steps:
+      - uses: actions/checkout@v4
+      - name: Placeholder (wire after first generated client commit)
+        run: echo "TODO regenerate api-client and fail if diff is non-empty"

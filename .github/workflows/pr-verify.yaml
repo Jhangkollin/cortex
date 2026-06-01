@@ -1,0 +1,26 @@
+name: pr-verify
+
+# Triggered when someone comments "@owl verify" on a PR.
+# Use after pushing changes to a PR that had a "Request changes" review,
+# to confirm the requested changes were addressed.
+
+on:
+  issue_comment:
+    types:
+      - created
+
+jobs:
+  verify:
+    if: >-
+      github.event.issue.pull_request &&
+      contains(github.event.comment.body, '@owl verify')
+
+    uses: mlytics/owl-workflows/.github/workflows/core-pr-verify.yaml@main
+
+    secrets:
+      anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}
+      github_app_id: ${{ secrets.MLYTICS_GITHUB_ACTION_APP_CLIENT_ID }}
+      github_app_private_key: ${{ secrets.MLYTICS_GITHUB_ACTION_APP_PRIVATE_KEY }}
+
+    with:
+      pr_number: ${{ github.event.issue.number }}

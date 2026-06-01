@@ -1,0 +1,205 @@
+/* ============================================================
+   Mlytics Cortex — Design Tokens
+   Source of truth for cortex-web frontend implementation.
+   Anchored to Mlytics Design System (Noto Sans + Roboto, teal-700
+   primary brand) with Cortex-specific semantic additions.
+   ============================================================ */
+
+@import url("https://fonts.googleapis.com/css2?family=Noto+Sans:wght@400;500;600;700&family=Noto+Sans+TC:wght@400;500;600;700&family=Noto+Serif+TC:wght@400;500;600;700&family=Lora:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500;1,600;1,700&family=Roboto:wght@400;500;700&display=swap");
+@import url("https://fonts.googleapis.com/icon?family=Material+Icons+Outlined");
+
+:root {
+  /* -------- BRAND TEAL (canonical Mlytics palette) -------- */
+  --mly-teal-900: #0E2D2C;
+  --mly-teal-800: #144948;  /* sidebar / dark surface */
+  --mly-teal-700: #1C726B;  /* primary brand */
+  --mly-teal-600: #225D59;  /* primary action */
+  --mly-teal-500: #1E6263;  /* hover / focus */
+  --mly-teal-400: #38A69A;
+  --mly-teal-200: #80CBC4;
+  --mly-teal-100: #B2DFDB;
+  --mly-teal-050: #E9EFEB;  /* page tint */
+
+  --mly-lime-500: #7CB342;
+  --mly-lime-400: #9CCC65;  /* success / chart (v2 gap-fill) */
+  --mly-lime-200: #DEEBC8;  /* selected text on dark */
+  --mly-lime-100: #EAF2DC;
+
+  /* -------- INK (true neutral grey) -------- */
+  --mly-ink-900: #1A1A1A;
+  --mly-ink-800: #333333;  /* body */
+  --mly-ink-700: #424242;
+  --mly-ink-600: #616161;
+  --mly-ink-500: #666666;  /* muted */
+  --mly-ink-400: #757575;
+  --mly-ink-300: #9E9E9E;
+  --mly-ink-200: #CCCCCC;  /* border */
+  --mly-ink-150: #E0E0E0;  /* divider */
+  --mly-ink-100: #EEEEEE;
+  --mly-ink-050: #F5F5F5;
+  --mly-ink-025: #F9F9FB;
+  --mly-white: #FFFFFF;
+
+  /* -------- STATUS -------- */
+  --mly-info: #0E9CFF;
+  --mly-warn: #FFCA28;
+  --mly-warn-strong: #F09B15;
+  --mly-success: #26A69A;
+  --mly-danger: #E53935;
+
+  /* -------- CORTEX-SPECIFIC ACCENTS --------
+     Used sparingly: counterfactual savings hero, "real data" badges,
+     advanced-mode toggle. Not for primary actions. */
+  --cortex-amber-50:  #FEF7E0;
+  --cortex-amber-200: #FCD34D;
+  --cortex-amber-500: #F59E0B;
+  --cortex-amber-600: #D88806;
+  --cortex-purple-fg: #5B21B6;  /* enterprise pill */
+  --cortex-purple-bg: #F5F3FF;
+  --cortex-purple-bd: #DDD6FE;
+
+  /* -------- SEMANTIC -------- */
+  --bg:         var(--mly-white);
+  --bg-page:    var(--mly-teal-050);
+  --bg-alt:     var(--mly-ink-025);
+  --surface:    var(--mly-white);
+  --surface-2:  var(--mly-ink-050);
+
+  --fg:         var(--mly-ink-800);
+  --fg-strong:  var(--mly-ink-900);
+  --fg-muted:   var(--mly-ink-500);
+  --fg-subtle:  var(--mly-ink-400);
+  --fg-on-dark: var(--mly-white);
+
+  --mly-border:      var(--mly-ink-200);  /* v2 gap-fill: canonical name used by discover.css */
+  --mly-border-soft: var(--mly-ink-150);  /* v2 gap-fill: canonical name used by discover.css */
+  --border:        var(--mly-ink-200);
+  --border-soft:   var(--mly-ink-150);
+  --divider:       var(--mly-ink-100);
+
+  --primary:       var(--mly-teal-600);
+  --primary-hover: var(--mly-teal-700);
+  --primary-deep:  var(--mly-teal-800);
+  --on-primary:    var(--mly-white);
+
+  --link:       var(--mly-teal-600);
+  --link-hover: var(--mly-teal-700);
+
+  --focus-ring: 0 0 0 3px rgba(34, 93, 89, 0.25);
+
+  /* -------- SIDEBAR — AURORA MIST (v1.2, canonical) --------
+     Pale mist base with three blurred radial light sources and a
+     14%-opacity SVG grain overlay. Light surface, teal accents.
+     Engineers consume the `--sidebar-*` semantic tokens for anything
+     that varies between the sidebar and the rest of the app; the full
+     gradient + grain recipe lives as a single `.sb` recipe in
+     globals.css (do not re-implement from tokens). */
+  --sidebar-bg-mist:       #ffffff;
+  --sidebar-border-mist:   rgba(118, 180, 170, 0.70);
+  --sidebar-fg:            var(--mly-ink-700);
+  --sidebar-fg-on-active:  var(--mly-teal-800);
+  --sidebar-active-bg:     linear-gradient(90deg, rgba(56,166,154,0.30), rgba(56,166,154,0.04) 85%);
+  --sidebar-active-strip:  var(--mly-teal-700);
+  --sidebar-active-glow:   0 0 18px rgba(56, 166, 154, 0.20);
+  --sidebar-pod-bg:        rgba(255, 255, 255, 0.55);
+  --sidebar-pod-border:    rgba(118, 180, 170, 0.65);
+
+  /* -------- TYPE -------- */
+  --font-sans:      "Noto Sans", system-ui, -apple-system, "Segoe UI", Helvetica, Arial, sans-serif;
+  --font-numeric:   "Roboto", "Noto Sans", system-ui, sans-serif;
+  --font-mono:      "Roboto Mono", "Roboto", ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace;
+  /* Report viewer fonts — added COR-81 */
+  --font-serif:     var(--font-lora), "Noto Serif TC", Georgia, "Times New Roman", serif;
+  --font-serif-tc:  "Noto Serif TC", "Noto Serif", Georgia, "Times New Roman", serif;
+
+  --text-display: 700 64px/1.05 var(--font-sans);   /* hero only */
+  --text-h1:      700 34px/1.2  var(--font-sans);
+  --text-h2:      700 24px/1.25 var(--font-sans);
+  --text-h3:      700 20px/1.4  var(--font-sans);
+  --text-h4:      700 16px/1.5  var(--font-sans);
+  --text-body:    400 14px/1.5  var(--font-sans);
+  --text-strong:  700 14px/1.5  var(--font-sans);
+  --text-small:   400 12px/1.5  var(--font-sans);
+  --text-micro:   400 11px/1.45 var(--font-sans);
+  --text-button:  500 14px/1.4  var(--font-sans);
+  --text-overline:700 11px/1.4  var(--font-sans);  /* + uppercase + 0.08em tracking */
+
+  /* -------- SPACING (4px base) -------- */
+  --sp-1: 4px;   --sp-2: 8px;   --sp-3: 12px;  --sp-4: 16px;
+  --sp-5: 20px;  --sp-6: 24px;  --sp-7: 32px;  --sp-8: 40px;
+  --sp-9: 48px;  --sp-10: 64px;
+
+  /* -------- RADIUS / ELEVATION -------- */
+  --r-xs:  2px;
+  --r-sm:  4px;   /* default control radius */
+  --r-md:  8px;
+  --r-lg:  12px;
+  --r-pill: 999px;
+
+  --elev-1: 0 1px 2px rgba(0,0,0,0.06), 0 1px 1px rgba(0,0,0,0.04);
+  --elev-2: 0 2px 6px rgba(0,0,0,0.06), 0 2px 4px rgba(0,0,0,0.04);
+  --elev-3: 0 6px 16px rgba(0,0,0,0.08), 0 2px 6px rgba(0,0,0,0.05);
+
+  /* -------- LAYOUT -------- */
+  --shell-sidebar-w: 240px;
+  --shell-topbar-h:  64px;
+  --shell-content-max: 1280px;
+
+  /* -------- v1.1 GRID — fluid + breakpoint cap --------
+     Discover/Nexus/History dashboards use a fluid 12-col grid that
+     stops growing at 1440px. Below 1024 the agent grid collapses 6→2,
+     KPI grid collapses 4→2. See §05. */
+  --grid-cols:        12;
+  --grid-gutter:      24px;
+  --grid-content-min: 320px;
+  --grid-content-max: 1440px;
+  --bp-sm: 640px;
+  --bp-md: 1024px;
+  --bp-lg: 1280px;
+  --bp-xl: 1440px;
+
+  /* -------- v1.1 FUNNEL — promote-above rule --------
+     When a stage's bar height is below this threshold, the value
+     numeral is promoted above the bar with a 1px amber connector
+     tick. Bars always honour --funnel-bar-min so a 0% stage is
+     visible. See §06. */
+  --funnel-bar-min:        6px;
+  --funnel-promote-thresh: 32px;  /* 22px numeric + 10px breathing */
+  --funnel-tick-h:         10px;
+
+  /* -------- MOTION -------- */
+  --ease-std: cubic-bezier(0.4, 0, 0.2, 1);
+  --dur-state: 120ms;
+  --dur-panel: 200ms;
+  --dur-route: 320ms;
+
+  /* -------- v1.1 SHELL RAIL — added per spec §05 body --------
+     The v1.1 spec text references --shell-content-max-wide and
+     --shell-kpi-cols but the official tokens.css does not define them.
+     Defined here so the implementation can ship; reported back to design
+     for inclusion in v1.2. */
+  --shell-content-max-wide: 1760px;
+  --shell-rail-pad: 32px;
+  --shell-rail-cap: var(--shell-content-max);
+  --shell-kpi-cols: 4;
+  --shell-agent-cols: 6;
+}
+
+/* -------- v1.1 BREAKPOINT SWITCHES --------
+   Below md (1024): KPI + agent collapse to 2-up (per v1.1 README).
+   At/above 1600vw: rail switches to wide cap, KPI grows to 6-up,
+   gutter grows to 48 (per v1.1 spec §05 body). */
+@media (max-width: 1023px) {
+  :root {
+    --shell-kpi-cols: 2;
+    --shell-agent-cols: 2;
+  }
+}
+
+@media (min-width: 1600px) {
+  :root {
+    --shell-rail-pad: 48px;
+    --shell-rail-cap: var(--shell-content-max-wide);
+    --shell-kpi-cols: 6;
+  }
+}

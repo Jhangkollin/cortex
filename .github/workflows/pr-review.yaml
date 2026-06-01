@@ -1,0 +1,29 @@
+name: pr-review
+
+# Triggered when a PR is opened, or when someone comments "@owl review" on a PR.
+# Mirrors agent-will-smith. Uses the shared owl reusable workflow.
+
+on:
+  pull_request:
+    types:
+      - opened
+  issue_comment:
+    types:
+      - created
+
+jobs:
+  review:
+    # Auto-run on PR open, OR when a PR comment contains "@owl review"
+    if: >-
+      github.event_name == 'pull_request' ||
+      (github.event.issue.pull_request && contains(github.event.comment.body, '@owl review'))
+
+    uses: mlytics/owl-workflows/.github/workflows/core-pr-review.yaml@main
+
+    secrets:
+      anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}
+      github_app_id: ${{ secrets.MLYTICS_GITHUB_ACTION_APP_CLIENT_ID }}
+      github_app_private_key: ${{ secrets.MLYTICS_GITHUB_ACTION_APP_PRIVATE_KEY }}
+
+    with:
+      pr_number: ${{ github.event.pull_request.number || github.event.issue.number }}

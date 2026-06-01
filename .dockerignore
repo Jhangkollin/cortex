@@ -1,0 +1,34 @@
+# Repo-root build context (deploy.yml builds api with `-f api/Dockerfile .`).
+# Keep the context lean and cache-stable. Conservative on purpose: when unsure,
+# do NOT exclude — correctness over size. Do not exclude api/ or
+# packages/brand-extract/ (both required by the api image build).
+
+# VCS
+.git
+
+# Node / web build artifacts
+**/node_modules
+web/.next
+web/out
+
+# Python caches & virtualenvs
+**/__pycache__
+**/*.pyc
+**/.pytest_cache
+**/.ruff_cache
+**/.mypy_cache
+.venv
+**/.venv
+
+# Secrets / local env
+*.env
+
+# OS cruft
+**/.DS_Store
+
+# Non-build assets / tooling
+docs
+.claude
+.superpowers
+.taskmaster
+cortex-wt

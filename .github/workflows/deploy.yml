@@ -1,0 +1,125 @@
+name: Deploy
+
+# Cortex CI builds and pushes images to ECR per env (UAT for develop, PROD for main).
+# Helm release is a follow-up PR in ../data-platform-helm-charts/.
+# See docs/superpowers/specs/2026-05-11-cortex-go-live-design.md.
+
+on:
+  push:
+    branches:
+      - develop
+      - main
+
+env:
+  AWS_REGION: ap-northeast-1
+  ECR_REPO_API: agents/cortex-api
+  ECR_REPO_WEB: agents/cortex-web
+  # Target image architecture for cortex EKS nodes (Graviton). One place for
+  # both build steps below + the post-build manifest verification. Flip to
+  # `linux/amd64,linux/arm64` if amd64 nodes are ever added.
+  TARGET_PLATFORM: linux/arm64
+
+jobs:
+  build-and-push:
+    name: "Build + push images to ECR"
+    # Native arm64 runner — TARGET_PLATFORM is linux/arm64 (Graviton EKS),
+    # so building on aarch64 hardware skips QEMU emulation entirely and
+    # cuts wall-clock by ~5–10×. Verified reachable on this org via the
+    # one-shot probe in chore/probe-arm-runner (2026-05-27).
+    runs-on: ubuntu-24.04-arm
+    # GHA constraint: `jobs.<id>.environment` does NOT support the `env` context
+    # (the Environment is resolved before env evaluation), so the branch -> env
+    # mapping is inlined here. The same ternary is mirrored in the Summary
+    # step's `env:` below — keep these two in sync.
+    #
+    # Unknown refs evaluate to '' which leaves the job without an Environment
+    # context; the Environment-scoped AWS_DEPLOY_ROLE_ARN secret is then
+    # unavailable, so `configure-aws-credentials` fails closed at step 3.
+    # (A separate upstream "resolver" job would allow `needs.X.outputs.Y` and
+    # remove the text duplication, but spinning up a runner for a 2-element
+    # static lookup on every deploy is over-engineered for the current scope —
+    # the trigger list above is the canonical "which branches deploy", and the
+    # env map is a thin projection.)
+    environment: ${{ github.ref_name == 'main' && 'prod' || github.ref_name == 'develop' && 'uat' || '' }}
+    permissions:
+      id-token: write
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ secrets.AWS_DEPLOY_ROLE_ARN }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Login to ECR
+        id: ecr
+        uses: aws-actions/amazon-ecr-login@v2
+
+      - name: Set image tag
+        id: tag
+        run: echo "tag=$(git rev-parse --short HEAD)" >> "$GITHUB_OUTPUT"
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Build + push api/
+        env:
+          ECR_REGISTRY: ${{ steps.ecr.outputs.registry }}
+          IMAGE_TAG: ${{ steps.tag.outputs.tag }}
+        run: |
+          docker buildx build \
+            --platform "$TARGET_PLATFORM" \
+            --cache-from "type=gha,scope=cortex-api" \
+            --cache-to "type=gha,mode=max,scope=cortex-api" \
+            -t "$ECR_REGISTRY/$ECR_REPO_API:$IMAGE_TAG" \
+            -f api/Dockerfile \
+            --push \
+            .
+
+      - name: Build + push web/
+        env:
+          ECR_REGISTRY: ${{ steps.ecr.outputs.registry }}
+          IMAGE_TAG: ${{ steps.tag.outputs.tag }}
+        run: |
+          docker buildx build \
+            --platform "$TARGET_PLATFORM" \
+            --cache-from "type=gha,scope=cortex-web" \
+            --cache-to "type=gha,mode=max,scope=cortex-web" \
+            -t "$ECR_REGISTRY/$ECR_REPO_WEB:$IMAGE_TAG" \
+            --build-arg NEXT_PUBLIC_CORTEX_ONBOARDING_HTTP=1 \
+            --push \
+            web/
+
+      - name: Verify pushed image architecture matches TARGET_PLATFORM
+        # Closes the "green CI -> deployable image" loop. If --platform is ever
+        # dropped, misspelled, or buildx defaults change, pushed images would
+        # have wrong arch and pods crashloop with `exec format error` at
+        # rollout time. This step asserts each manifest contains the expected
+        # platform string BEFORE the helm-charts SHA bump is opened.
+        env:
+          ECR_REGISTRY: ${{ steps.ecr.outputs.registry }}
+          IMAGE_TAG: ${{ steps.tag.outputs.tag }}
+        run: |
+          for repo in "$ECR_REPO_API" "$ECR_REPO_WEB"; do
+            echo "::group::Inspect $repo:$IMAGE_TAG"
+            output=$(docker buildx imagetools inspect "$ECR_REGISTRY/$repo:$IMAGE_TAG")
+            echo "$output"
+            echo "::endgroup::"
+            if ! echo "$output" | grep -qE "^\s*Platform:\s+$TARGET_PLATFORM\s*$"; then
+              echo "::error::$repo:$IMAGE_TAG missing expected Platform: $TARGET_PLATFORM"
+              exit 1
+            fi
+            echo "OK: $repo:$IMAGE_TAG has platform $TARGET_PLATFORM"
+          done
+
+      - name: Summary
+        env:
+          IMAGE_TAG: ${{ steps.tag.outputs.tag }}
+          # Mirrors the `environment:` selector above; see the comment there
+          # for why this can't be a workflow-level `env:` reference.
+          TARGET_ENV: ${{ github.ref_name == 'main' && 'prod' || github.ref_name == 'develop' && 'uat' || '' }}
+        run: |
+          echo "Pushed agents/cortex-api:$IMAGE_TAG and agents/cortex-web:$IMAGE_TAG to $TARGET_ENV ECR."
+          echo "Next: open release PR in data-platform-helm-charts updating environments/$TARGET_ENV/cortex/values.yaml image tags."
