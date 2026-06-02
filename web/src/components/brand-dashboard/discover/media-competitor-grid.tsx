@@ -1,83 +1,61 @@
-/**
- * Bottom grid (spec §6.7): ranked media table + competitor head-to-head.
- *
- * Transcribed verbatim from /tmp/cortex-handoff/cortex/project/cortex/
- * dashboard.jsx lines 514–572. Structure only — the `.sp .grid`, `.media`,
- * `.comp`, `.h2h`, `.you`, `.lead`, `.track`, `.bar`, `.badge`, `.legend`
- * recipes (incl. YOU/LEADER `::before/::after` pseudo-elements) already live
- * in globals.css, so this emits classes and never tag text.
- */
-
 import type { DiscoverData } from "@/lib/discover/types";
 
 export function MediaCompetitorGrid({
   media,
-  comp,
+  intent,
 }: {
   media: DiscoverData["media"];
-  comp: DiscoverData["comp"];
+  intent: DiscoverData["intent"];
 }) {
+  const maxViews = Math.max(...intent.rows.map((r) => r.views));
+
   return (
     <div className="grid">
       <div className="card media">
         <div className="ch">
           <div>
-            <h3>Top media</h3>
+            <h3>{media.title}</h3>
             <div className="sub">{media.sub}</div>
           </div>
-          <a href="#">View all 32 →</a>
-        </div>
-        <div className="row head">
-          <div></div>
-          <div>Media</div>
-          <div>Visibility</div>
-          <div style={{ textAlign: "right" }}>Share</div>
-          <div style={{ textAlign: "right" }}>Clicks</div>
         </div>
         {media.rows.map((m, i) => (
-          <div className="row" key={i}>
-            <div className="rk">{m.rk}</div>
+          <div className="row media-simple" key={i}>
             <div className="nm">
               {m.nm}
               {m.badge ? <span className="badge">{m.badge}</span> : null}
             </div>
             <div className="bar">
-              <i style={{ width: `${m.vis * 2.4}%` }} />
+              <i style={{ width: `${m.vis}%` }} />
             </div>
             <div className="pct">{m.vis}%</div>
-            <div className="clk">{m.clk}</div>
           </div>
         ))}
       </div>
 
-      <div className="card comp">
+      <div className="card intent">
         <div className="ch">
           <div>
-            <h3>Competitor visibility</h3>
-            <div className="sub">{comp.sub}</div>
+            <h3>意圖類別 × 你的產品線</h3>
+            <div className="sub">依月相關曝光排序</div>
           </div>
-          <a href="#">Open benchmark →</a>
         </div>
-        {comp.rows.map((c, i) => (
-          <div className="h2h" key={i}>
-            <div className="h2h-hd">
-              <div className="nm">{c.nm}</div>
-              <div className="lbl">{c.pct.toFixed(1)}%</div>
+        {intent.rows.map((r, i) => (
+          <div className="int-row" key={i}>
+            <div className="int-hd">
+              <div className="int-nm">
+                {r.top && <span className="int-top">TOP</span>}
+                {r.nm} ({r.count}題)
+              </div>
+              <div className="int-views">{r.views.toLocaleString()} views</div>
             </div>
-            <div className="track">
-              <i style={{ width: `${c.pct}%` }} />
+            <div className="int-track">
+              <i
+                className={r.top ? "is-top" : ""}
+                style={{ width: `${(r.views / maxViews) * 100}%` }}
+              />
             </div>
           </div>
         ))}
-        <div className="legend">
-          <span>
-            <span className="material-icons-outlined">trending_down</span>
-            Gap to leader
-          </span>
-          <span>
-            <b>{comp.gap}</b>
-          </span>
-        </div>
       </div>
     </div>
   );

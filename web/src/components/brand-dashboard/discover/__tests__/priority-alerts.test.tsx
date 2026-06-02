@@ -13,14 +13,13 @@ describe("PriorityAlerts", () => {
     expect(container.querySelector(".alert.is-warn")).toBeTruthy();
     expect(container.querySelector(".alert.is-opp")).toBeTruthy();
     expect(container.querySelector(".alert.is-sig")).toBeTruthy();
-    expect(screen.getByText("GAP")).toBeInTheDocument();
+    expect(screen.getByText("需求池")).toBeInTheDocument();
   });
 });
 
 describe("Topbar", () => {
-  test("renders crumb, title, subtitle and filter chips", () => {
+  test("renders title, subtitle and filter chips", () => {
     const { container } = render(<Topbar />);
-    expect(screen.getByText("BRAND CORTEX")).toBeInTheDocument();
     expect(
       screen.getByRole("heading", { name: "Discover" }),
     ).toBeInTheDocument();

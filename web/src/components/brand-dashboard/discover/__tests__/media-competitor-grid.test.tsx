@@ -6,12 +6,12 @@ import { BASE_DATA } from "@/lib/discover/mock";
 
 void describe;
 
-test("media rows + competitor h2h with you/lead", () => {
+test("media rows + intent category bars", () => {
   const { container } = render(
-    <MediaCompetitorGrid media={BASE_DATA.media} comp={BASE_DATA.comp} />,
+    <MediaCompetitorGrid media={BASE_DATA.media} intent={BASE_DATA.intent} />,
   );
-  expect(container.querySelectorAll(".media .row:not(.head)")).toHaveLength(5);
-  expect(container.querySelector(".h2h.you")).toBeTruthy();
-  expect(container.querySelector(".h2h.lead")).toBeTruthy();
-  expect(screen.getByText("−15.8 pp")).toBeInTheDocument();
+  expect(container.querySelectorAll(".media .row.media-simple")).toHaveLength(2);
+  expect(container.querySelectorAll(".int-row")).toHaveLength(10);
+  expect(screen.getByText("早安健康")).toBeInTheDocument();
+  expect(container.querySelector(".int-top")).toBeTruthy();
 });

@@ -46,7 +46,7 @@ export function Page6({ report }: Page6Props) {
       h: "待驗證假設",
       en: "Hypotheses",
       items: insights.hypotheses,
-      tone: "var(--mly-teal-400)",
+      tone: "var(--mly-teal-700)",
       bg: "rgb(244, 249, 250)",
       border: "var(--mly-teal-200)",
     },
@@ -86,8 +86,8 @@ export function Page6({ report }: Page6Props) {
                 <span
                   style={{
                     fontFamily: "var(--font-mono)",
-                    fontSize: 11,
-                    letterSpacing: "0.16em",
+                    fontSize: 15,
+                    letterSpacing: "0.08em",
                     textTransform: "uppercase",
                     color: c.tone,
                     fontWeight: 700,
@@ -95,18 +95,8 @@ export function Page6({ report }: Page6Props) {
                 >
                   0{i + 1} · {c.en}
                 </span>
-                <span style={{ fontSize: 16, fontWeight: 700, color: "var(--paper-ink)" }}>
+                <span style={{ fontSize: 15, fontWeight: 700, color: "var(--paper-ink)" }}>
                   {c.h}
-                </span>
-                <span
-                  style={{
-                    marginLeft: "auto",
-                    fontFamily: "var(--font-mono)",
-                    fontSize: 10,
-                    color: "var(--paper-ink-3)",
-                  }}
-                >
-                  {c.items.length} 點
                 </span>
               </div>
               {c.items.length === 0 ? (
@@ -115,7 +105,7 @@ export function Page6({ report }: Page6Props) {
                 </div>
               ) : (
                 <ol
-                  style={{ margin: 0, padding: 0, listStyle: "none", display: "grid", gap: 6 }}
+                  style={{ margin: 0, padding: "0 0 0 16px", listStyle: "none", display: "grid", gap: 6 }}
                 >
                   {c.items.map((t, idx) => (
                     <li

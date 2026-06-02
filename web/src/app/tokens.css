@@ -5,7 +5,7 @@
    primary brand) with Cortex-specific semantic additions.
    ============================================================ */
 
-@import url("https://fonts.googleapis.com/css2?family=Noto+Sans:wght@400;500;600;700&family=Noto+Sans+TC:wght@400;500;600;700&family=Noto+Serif+TC:wght@400;500;600;700&family=Lora:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500;1,600;1,700&family=Roboto:wght@400;500;700&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Noto+Sans:wght@400;500;600;700&family=Noto+Sans+TC:wght@400;500;600;700&family=Noto+Serif+TC:wght@400;500;600;700&family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,700;1,9..144,400;1,9..144,500;1,9..144,700&family=Roboto:wght@400;500;700&display=swap");
 @import url("https://fonts.googleapis.com/icon?family=Material+Icons+Outlined");
 
 :root {
@@ -94,7 +94,7 @@
      that varies between the sidebar and the rest of the app; the full
      gradient + grain recipe lives as a single `.sb` recipe in
      globals.css (do not re-implement from tokens). */
-  --sidebar-bg-mist:       #ffffff;
+  --sidebar-bg-mist:       #DADFDD;
   --sidebar-border-mist:   rgba(118, 180, 170, 0.70);
   --sidebar-fg:            var(--mly-ink-700);
   --sidebar-fg-on-active:  var(--mly-teal-800);
@@ -109,7 +109,7 @@
   --font-numeric:   "Roboto", "Noto Sans", system-ui, sans-serif;
   --font-mono:      "Roboto Mono", "Roboto", ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace;
   /* Report viewer fonts — added COR-81 */
-  --font-serif:     var(--font-lora), "Noto Serif TC", Georgia, "Times New Roman", serif;
+  --font-serif:     "Fraunces", Georgia, "Times New Roman", serif;
   --font-serif-tc:  "Noto Serif TC", "Noto Serif", Georgia, "Times New Roman", serif;
 
   --text-display: 700 64px/1.05 var(--font-sans);   /* hero only */

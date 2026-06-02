@@ -30,18 +30,8 @@ export function Page4({ report }: Page4Props) {
         />
       </div>
 
-      {/* mini constellation decoration — node count tracks real media count;
-          labels omitted at this size to avoid clutter (never fabricated). */}
-      <div style={{ position: "absolute", right: 30, top: 56, opacity: 0.95 }}>
-        <ConstellationSVG
-          size={180}
-          brandMono={b.monogram}
-          accent="var(--mly-teal-700)"
-          productCount={report.productLines.length || undefined}
-        />
-      </div>
 
-      <div style={{ position: "absolute", left: 36, right: 36, top: 240 }}>
+      <div style={{ position: "absolute", left: 36, right: 36, top: 160 }}>
         {media.length === 0 ? (
           <div
             style={{

@@ -33,22 +33,27 @@ const baseProps = {
 };
 
 describe("Sidebar §04", () => {
-  test("renders the v2 §04 nav items", () => {
+  test("renders the 3 nav items", () => {
     render(<Sidebar {...baseProps} />);
     expect(screen.getByText("Discover")).toBeInTheDocument();
-    expect(screen.getByText("History")).toBeInTheDocument();
-    expect(screen.getByText("Media Network")).toBeInTheDocument();
+    expect(screen.getByText("Ask Cortex")).toBeInTheDocument();
     expect(screen.getByText("Knowledge Base")).toBeInTheDocument();
-    expect(screen.getByText("Brand Voice")).toBeInTheDocument();
-    expect(screen.getByText("Connectors")).toBeInTheDocument();
   });
 
-  test("does not render removed §04 elements", () => {
+  test("does not render removed nav items", () => {
     render(<Sidebar {...baseProps} />);
-    expect(screen.queryByText("New decision")).not.toBeInTheDocument();
-    expect(screen.queryByText("GEO Monitor")).not.toBeInTheDocument();
-    expect(screen.queryByText("Brand Cortex")).not.toBeInTheDocument();
-    expect(screen.queryByText("ENT")).not.toBeInTheDocument();
+    expect(screen.queryByText("History")).not.toBeInTheDocument();
+    expect(screen.queryByText("Media Network")).not.toBeInTheDocument();
+    expect(screen.queryByText("Brand Voice")).not.toBeInTheDocument();
+    expect(screen.queryByText("Connectors")).not.toBeInTheDocument();
+  });
+
+  test("Knowledge Base shows soon badge and is not a link", () => {
+    const { container } = render(<Sidebar {...baseProps} />);
+    expect(screen.getByText("soon")).toBeInTheDocument();
+    const links = container.querySelectorAll("a");
+    const kbLink = Array.from(links).find((a) => a.textContent?.includes("Knowledge Base"));
+    expect(kbLink).toBeUndefined();
   });
 
   test("only one row is aria-current on /brand/dashboard", () => {
