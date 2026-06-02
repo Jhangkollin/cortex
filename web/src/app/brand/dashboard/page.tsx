@@ -24,27 +24,17 @@
 
 import { Suspense } from "react";
 
-import { useSearchParams } from "next/navigation";
-
 import { useMockSession } from "@/components/auth/mock-session-provider";
-import { BrandReportSurface } from "@/components/brand-dashboard/brand-report-surface";
 import { DiscoverDashboard } from "@/components/brand-dashboard/discover/discover-dashboard";
 import { EmptyDiscover } from "@/components/brand-dashboard/empty-discover";
 
 function BrandDashboardContent() {
   const { session } = useMockSession();
 
-  // Deterministic local/QA trigger for the Brand IQ celebration:
-  // `?celebrate=preview` renders the celebration from a fixture (no cortex-api).
-  const preview = useSearchParams().get("celebrate") === "preview";
-
   const isEmpty = !session.demo && session.connectedSourceCount === 0;
 
   return (
     <div className="pg sp">
-      {/* Brand IQ report hero + one-time celebration — renders for both empty
-          and populated brands (a just-onboarded brand has 0 sources). */}
-      <BrandReportSurface preview={preview} />
       {isEmpty ? <EmptyDiscover /> : <DiscoverDashboard />}
     </div>
   );

@@ -95,18 +95,18 @@ export function ReportViewer({ report, reportId }: ReportViewerProps) {
   // signed Bearer token server-side and streams the binary back.
   const pdfUrl = `/brand/reports/${reportId}/pdf`;
 
-  // Soft (white + paper-border) toolbar button — reused by Back, Print, Share.
+  // Soft (white + border) toolbar button — reused by Back, Print, Share.
   const softBtnStyle = {
     display: "inline-flex" as const,
     alignItems: "center" as const,
     gap: 6,
     background: "#fff",
-    border: "1px solid #d5dee0",
+    border: "1px solid var(--mly-ink-150)",
     color: "var(--mly-ink-800)",
     padding: "7px 12px",
-    borderRadius: 6,
-    fontSize: 12,
-    fontWeight: 600,
+    borderRadius: "var(--r-md)",
+    fontSize: 13,
+    fontWeight: 500,
     cursor: "pointer" as const,
   };
 
@@ -136,7 +136,7 @@ export function ReportViewer({ report, reportId }: ReportViewerProps) {
           alignItems: "center",
           gap: 14,
           background: "#fff",
-          borderBottom: "1px solid #d5dee0",
+          borderBottom: "1px solid var(--mly-ink-150)",
           flexShrink: 0,
         }}
       >
@@ -151,7 +151,7 @@ export function ReportViewer({ report, reportId }: ReportViewerProps) {
           <Icon name="arrow_back" size={14} color="var(--mly-ink-800)" /> 返回 Dashboard
         </button>
 
-        <div style={{ width: 1, height: 22, background: "#d5dee0" }} />
+        <div style={{ width: 1, height: 22, background: "var(--mly-ink-150)" }} />
 
         {/* brand monogram + title */}
         <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
@@ -209,11 +209,11 @@ export function ReportViewer({ report, reportId }: ReportViewerProps) {
               onClick={() => setScale((s) => Math.max(0.55, parseFloat((s - 0.05).toFixed(2))))}
               style={{
                 background: "#fff",
-                border: "1px solid #d5dee0",
+                border: "1px solid var(--mly-ink-150)",
                 color: "var(--mly-ink-800)",
                 width: 24,
                 height: 24,
-                borderRadius: 4,
+                borderRadius: "var(--r-sm)",
                 cursor: "pointer",
                 display: "grid",
                 placeItems: "center",
@@ -229,11 +229,11 @@ export function ReportViewer({ report, reportId }: ReportViewerProps) {
               onClick={() => setScale((s) => Math.min(1.5, parseFloat((s + 0.05).toFixed(2))))}
               style={{
                 background: "#fff",
-                border: "1px solid #d5dee0",
+                border: "1px solid var(--mly-ink-150)",
                 color: "var(--mly-ink-800)",
                 width: 24,
                 height: 24,
-                borderRadius: 4,
+                borderRadius: "var(--r-sm)",
                 cursor: "pointer",
                 display: "grid",
                 placeItems: "center",
@@ -244,7 +244,7 @@ export function ReportViewer({ report, reportId }: ReportViewerProps) {
           </div>
         </div>
 
-        <div style={{ width: 1, height: 22, background: "#d5dee0" }} />
+        <div style={{ width: 1, height: 22, background: "var(--mly-ink-150)" }} />
 
         {/* print */}
         <button onClick={() => window.print()} style={softBtnStyle}>
@@ -266,9 +266,9 @@ export function ReportViewer({ report, reportId }: ReportViewerProps) {
             color: "#fff",
             border: "none",
             padding: "8px 16px",
-            borderRadius: 6,
+            borderRadius: "var(--r-md)",
             fontSize: 13,
-            fontWeight: 800,
+            fontWeight: 700,
             cursor: "pointer",
             textDecoration: "none",
             boxShadow: "0 6px 16px -4px rgba(28, 114, 107, 0.30)",
@@ -286,8 +286,8 @@ export function ReportViewer({ report, reportId }: ReportViewerProps) {
         <aside
           className="report-toc"
           style={{
-            background: "#f5f9f8",
-            borderRight: "1px solid #d5dee0",
+            background: "var(--mly-ink-025)",
+            borderRight: "1px solid var(--mly-ink-150)",
             overflowY: "auto",
             padding: "20px 16px",
           }}
@@ -321,8 +321,8 @@ export function ReportViewer({ report, reportId }: ReportViewerProps) {
                     borderRadius: 6,
                     cursor: "pointer",
                     textAlign: "left",
-                    background: on ? "rgb(244, 249, 250)" : "transparent",
-                    border: `1px solid ${on ? "var(--mly-teal-200)" : "transparent"}`,
+                    background: on ? "var(--mly-teal-050)" : "transparent",
+                    border: `1px solid ${on ? "var(--mly-teal-100)" : "transparent"}`,
                     color: "var(--mly-ink-800)",
                     transition: "all 150ms",
                   }}
@@ -340,7 +340,7 @@ export function ReportViewer({ report, reportId }: ReportViewerProps) {
                   <span>
                     <div
                       style={{
-                        fontSize: 12.5,
+                        fontSize: 13,
                         fontWeight: on ? 700 : 500,
                         color: "var(--mly-ink-800)",
                       }}
@@ -380,7 +380,7 @@ export function ReportViewer({ report, reportId }: ReportViewerProps) {
             style={{
               marginTop: 18,
               paddingTop: 18,
-              borderTop: "1px solid #d5dee0",
+              borderTop: "1px solid var(--mly-ink-150)",
             }}
           >
             <div
@@ -431,9 +431,9 @@ export function ReportViewer({ report, reportId }: ReportViewerProps) {
             style={{
               marginTop: 18,
               padding: "12px 12px",
-              background: "rgb(244, 249, 250)",
-              border: "1px dashed var(--mly-teal-200)",
-              borderRadius: 6,
+              background: "var(--mly-teal-050)",
+              border: "1px dashed var(--mly-teal-100)",
+              borderRadius: "var(--r-md)",
               fontSize: 11,
               color: "var(--mly-ink-600)",
               lineHeight: 1.55,
@@ -532,7 +532,7 @@ export function ReportViewer({ report, reportId }: ReportViewerProps) {
               color: "var(--mly-ink-400)",
               fontFamily: "var(--font-mono)",
               fontSize: 11,
-              borderTop: "1px dashed #d5dee0",
+              borderTop: "1px dashed var(--mly-ink-150)",
               letterSpacing: "0.14em",
             }}
           >

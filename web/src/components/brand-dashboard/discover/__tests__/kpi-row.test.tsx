@@ -5,14 +5,11 @@ import { KpiRow } from "../kpi-row";
 import { BASE_DATA } from "@/lib/discover/mock";
 
 describe("kpi-row", () => {
-  test("renders hero value + 3 minis with sparklines", () => {
-    const { container } = render(
-      <KpiRow hero={BASE_DATA.hero} minis={BASE_DATA.minis} />,
-    );
-    expect(screen.getByText("18.4")).toBeInTheDocument();
-    expect(screen.getByText("Brand-cited answers")).toBeInTheDocument();
-    expect(container.querySelectorAll(".mini")).toHaveLength(3);
-    expect(container.querySelectorAll(".mini-spk")).toHaveLength(3);
-    expect(container.querySelector(".h-main .spk")).toBeTruthy();
+  test("renders 4 equal KPI cards with sparklines", () => {
+    const { container } = render(<KpiRow kpis={BASE_DATA.kpis} />);
+    expect(screen.getByText("48")).toBeInTheDocument();
+    expect(screen.getByText("相關問題數 (TOP 500 抽樣)")).toBeInTheDocument();
+    expect(container.querySelectorAll(".mini")).toHaveLength(4);
+    expect(container.querySelectorAll(".mini-spk")).toHaveLength(4);
   });
 });

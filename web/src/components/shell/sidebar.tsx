@@ -47,63 +47,28 @@ interface NavItem {
   icon: string;
   requires?: Parameters<typeof hasCapability>[2];
   isDefault?: boolean;
+  soon?: boolean;
 }
 
-interface NavSection {
-  label: string;
-  items: NavItem[];
-}
-
-const TOP_LEVEL: NavItem[] = [
+const NAV_ITEMS: NavItem[] = [
   {
     label: "Discover",
     href: "/brand/dashboard",
-    icon: "grid_view",
+    icon: "explore",
     requires: "view_brand_dashboard",
     isDefault: true,
   },
   {
-    label: "History",
-    href: "/brand/history",
-    icon: "schedule",
+    label: "Ask Cortex",
+    href: "/brand/ask-cortex",
+    icon: "auto_awesome",
     requires: "view_brand_dashboard",
   },
-];
-
-const NAV_SECTIONS: NavSection[] = [
   {
-    label: "Network",
-    items: [
-      {
-        label: "Media Network",
-        href: "/brand/dashboard",
-        icon: "hub",
-        requires: "view_brand_dashboard",
-      },
-    ],
-  },
-  {
-    label: "Agent",
-    items: [
-      {
-        label: "Knowledge Base",
-        href: "/brand/knowledge",
-        icon: "menu_book",
-        requires: "view_kb_enterprise",
-      },
-      {
-        label: "Brand Voice",
-        href: "/brand/dashboard",
-        icon: "campaign",
-        requires: "view_brand_dashboard",
-      },
-      {
-        label: "Connectors",
-        href: "/connectors",
-        icon: "cable",
-        requires: "view_connectors",
-      },
-    ],
+    label: "Knowledge Base",
+    href: "/brand/knowledge",
+    icon: "menu_book",
+    soon: true,
   },
 ];
 
@@ -137,6 +102,25 @@ function NavRow({
   item: NavItem;
   active: boolean;
 }) {
+  if (item.soon) {
+    return (
+      <div
+        className="relative z-[2] flex cursor-default items-center gap-2.5 rounded-md px-3 py-[9px] text-[13.5px] font-medium"
+        aria-disabled="true"
+      >
+        <span
+          className="material-icons-outlined"
+          style={{ fontSize: 18, color: "var(--mly-ink-300)" }}
+          aria-hidden
+        >
+          {item.icon}
+        </span>
+        <span className="flex-1 text-[var(--mly-ink-300)]">{item.label}</span>
+        <span className="sb-soon">soon</span>
+      </div>
+    );
+  }
+
   return (
     <Link
       href={item.href}
@@ -145,7 +129,7 @@ function NavRow({
         "text-[13.5px] font-medium",
         "transition-[background-color,color,box-shadow] duration-state ease-std",
         active
-          ? "font-semibold text-[var(--sidebar-fg-on-active)] bg-[#f0f4f5]"
+          ? "font-semibold text-[var(--sidebar-fg-on-active)] bg-[#ebebea]"
           : "text-ink-700 hover:bg-[rgba(20,73,72,0.05)] hover:text-ink-900",
       )}
       aria-current={active ? "page" : undefined}
@@ -351,36 +335,13 @@ export function Sidebar({
           on short viewports. `min-h-0` lets this flex child shrink below its
           content size so overflow-y actually engages. */}
       <div className="relative z-[2] flex min-h-0 flex-1 flex-col gap-1.5 overflow-y-auto">
-        {/* Top-level (Discover, History) — no section header */}
-        {TOP_LEVEL.filter((item) =>
+        {NAV_ITEMS.filter((item) =>
           item.requires
             ? hasCapability(activeContextKind, role, item.requires, tier)
             : true,
         ).map((item) => (
           <NavRow key={item.label} item={item} active={isItemActive(item)} />
         ))}
-
-        {/* Grouped sections */}
-        {NAV_SECTIONS.map((section) => {
-          const visible = section.items.filter((item) =>
-            item.requires
-              ? hasCapability(activeContextKind, role, item.requires, tier)
-              : true,
-          );
-          if (visible.length === 0) return null;
-          return (
-            <div key={section.label} className="contents">
-              <div className="lab">{section.label}</div>
-              {visible.map((item) => (
-                <NavRow
-                  key={`${section.label}-${item.label}`}
-                  item={item}
-                  active={isItemActive(item)}
-                />
-              ))}
-            </div>
-          );
-        })}
       </div>
 
       {/* User footer popover */}
