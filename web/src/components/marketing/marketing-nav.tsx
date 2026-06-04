@@ -13,14 +13,12 @@ export interface MarketingNavProps {
   className?: string;
 }
 
-// Only Pricing is a live route in this slice. Partnership is a stub that
-// renders as a non-routed anchor so Next.js typed-routes doesn't fail the
-// build. Add it to LIVE_LINKS once /partnership/page.tsx exists.
 const LIVE_LINKS = [
   { key: "pricing" as const, label: "Pricing", href: "/pricing" as const },
+  { key: "partnership" as const, label: "Partnership", href: "/partnership" as const },
 ];
 
-const STUB_LINKS = [{ key: "partnership" as const, label: "Partnership" }];
+const STUB_LINKS: { key: string; label: string }[] = [];
 
 /**
  * Public marketing chrome — used by routes inside the (marketing) route group.
@@ -35,7 +33,7 @@ export function MarketingNav({ active, className }: MarketingNavProps) {
     active ??
     (LIVE_LINKS.find(
       (l) => pathname === l.href || pathname?.startsWith(`${l.href}/`),
-    )?.key ?? null);
+    )?.key ?? null) as "pricing" | "partnership" | null;
 
   return (
     <header
